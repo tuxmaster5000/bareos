@@ -80,7 +80,7 @@
 #cmakedefine HAVE_ALLOCA @HAVE_ALLOCA@
 
 /* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
-   */
+ */
 #cmakedefine HAVE_ALLOCA_H @HAVE_ALLOCA_H@
 
 /* Define to 1 if you have the <argz.h> header file. */
@@ -167,7 +167,7 @@
 #cmakedefine HAVE_DARWIN_OS @HAVE_DARWIN_OS@
 
 /* Define if the GNU dcgettext() function is already present or preinstalled.
-   */
+ */
 #cmakedefine HAVE_DCGETTEXT @HAVE_DCGETTEXT@
 
 /* Define to 1 if you have the declaration of `cygwin_conv_path', and to 0 if
@@ -187,7 +187,7 @@
 #cmakedefine HAVE_DECL_GETC_UNLOCKED @HAVE_DECL_GETC_UNLOCKED@
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
-   */
+ */
 #cmakedefine HAVE_DECL_TZNAME @HAVE_DECL_TZNAME@
 
 /* Define to 1 if you have the declaration of `_snprintf', and to 0 if you
@@ -205,7 +205,7 @@
 #cmakedefine HAVE_DEV_SCSIPI_SCSIPI_ALL_H @HAVE_DEV_SCSIPI_SCSIPI_ALL_H@
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
+ */
 #cmakedefine HAVE_DIRENT_H @HAVE_DIRENT_H@
 
 /* Define if you have the GNU dld library. */
@@ -257,7 +257,8 @@
 #cmakedefine HAVE_EXTATTR_LIST_LINK @HAVE_EXTATTR_LIST_LINK@
 
 /* Define to 1 if you have the `extattr_namespace_to_string' function. */
-#cmakedefine HAVE_EXTATTR_NAMESPACE_TO_STRING @HAVE_EXTATTR_NAMESPACE_TO_STRING@
+#cmakedefine HAVE_EXTATTR_NAMESPACE_TO_STRING \
+    @HAVE_EXTATTR_NAMESPACE_TO_STRING@
 
 /* Define to 1 if you have the `extattr_set_file' function. */
 #cmakedefine HAVE_EXTATTR_SET_FILE @HAVE_EXTATTR_SET_FILE@
@@ -266,7 +267,8 @@
 #cmakedefine HAVE_EXTATTR_SET_LINK @HAVE_EXTATTR_SET_LINK@
 
 /* Define to 1 if you have the `extattr_string_to_namespace' function. */
-#cmakedefine HAVE_EXTATTR_STRING_TO_NAMESPACE @HAVE_EXTATTR_STRING_TO_NAMESPACE@
+#cmakedefine HAVE_EXTATTR_STRING_TO_NAMESPACE \
+    @HAVE_EXTATTR_STRING_TO_NAMESPACE@
 
 /* Define to 1 if you want Extended acl support */
 #cmakedefine HAVE_EXTENDED_ACL @HAVE_EXTENDED_ACL@
@@ -390,6 +392,9 @@
 
 /* Define to 1 if you have gfapi lib */
 #cmakedefine HAVE_GFAPI @HAVE_GFAPI@
+
+/* Define to 1 if the `glfs_ftruncate' function has four arguments. */
+#cmakedefine GLFS_FTRUNCATE_HAS_FOUR_ARGS @GLFS_FTRUNCATE_HAS_FOUR_ARGS@
 
 /* Define to 1 if you have the `glfs_readdirplus' function. */
 #cmakedefine HAVE_GLFS_READDIRPLUS @HAVE_GLFS_READDIRPLUS@
@@ -621,7 +626,7 @@
 #cmakedefine HAVE_OPENSSL @HAVE_OPENSSL@
 
 /* Define to 1 if the OpenSSL library is export-contrained to 128bit ciphers
-   */
+ */
 #cmakedefine HAVE_OPENSSL_EXPORT_LIBRARY @HAVE_OPENSSL_EXPORT_LIBRARY@
 
 /* Define to 1 if you are running Tru64 */
@@ -646,7 +651,8 @@
 #cmakedefine HAVE_POSTGRESQL @HAVE_POSTGRESQL@
 
 /* Set if PostgreSQL DB batch insert code enabled */
-#cmakedefine HAVE_POSTGRESQL_BATCH_FILE_INSERT @HAVE_POSTGRESQL_BATCH_FILE_INSERT@
+#cmakedefine HAVE_POSTGRESQL_BATCH_FILE_INSERT \
+    @HAVE_POSTGRESQL_BATCH_FILE_INSERT@
 
 /* Set if have PQisthreadsafe */
 #cmakedefine HAVE_PQISTHREADSAFE @HAVE_PQISTHREADSAFE@
@@ -857,7 +863,7 @@
 #cmakedefine HAVE_SYS_CAPABILITY_H @HAVE_SYS_CAPABILITY_H@
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
-   */
+ */
 #cmakedefine HAVE_SYS_DIR_H @HAVE_SYS_DIR_H@
 
 /* Define to 1 if you have the <sys/dl.h> header file. */
@@ -879,7 +885,7 @@
 #cmakedefine HAVE_SYS_MTIO_H @HAVE_SYS_MTIO_H@
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
-   */
+ */
 #cmakedefine HAVE_SYS_NDIR_H @HAVE_SYS_NDIR_H@
 
 /* Define to 1 if you have the <sys/nvpair.h> header file. */
@@ -1071,7 +1077,7 @@
 #cmakedefine LT_OBJDIR @LT_OBJDIR@
 
 /* Define to 1 if `major', `minor', and `makedev' are declared in <mkdev.h>.
-   */
+ */
 #cmakedefine MAJOR_IN_MKDEV @MAJOR_IN_MKDEV@
 
 /* Define to 1 if `major', `minor', and `makedev' are declared in
@@ -1139,9 +1145,9 @@
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
    automatically deduced at runtime.
-	STACK_DIRECTION > 0 => grows toward higher addresses
-	STACK_DIRECTION < 0 => grows toward lower addresses
-	STACK_DIRECTION = 0 => direction of growth unknown */
+        STACK_DIRECTION > 0 => grows toward higher addresses
+        STACK_DIRECTION < 0 => grows toward lower addresses
+        STACK_DIRECTION = 0 => direction of growth unknown */
 #cmakedefine STACK_DIRECTION @STACK_DIRECTION@
 
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
@@ -1168,13 +1174,13 @@
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD
-# if defined __BIG_ENDIAN__
-#  define WORDS_BIGENDIAN 1
-# endif
+#if defined __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#endif
 #else
-# ifndef WORDS_BIGENDIAN
-#  undef WORDS_BIGENDIAN
-# endif
+#ifndef WORDS_BIGENDIAN
+#undef WORDS_BIGENDIAN
+#endif
 #endif
 
 /* Define to 1 if the X Window System is missing or not being used. */
