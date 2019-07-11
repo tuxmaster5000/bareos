@@ -28,7 +28,7 @@ function(ConfigureFilesToSystemtest srcdir subdirectory globexpression configure
   foreach(CURRENT_FILE ${ALL_FILES})
     MATH(EXPR COUNT "${COUNT}+1")
     string(REPLACE "${CMAKE_SOURCE_DIR}/" "" TARGET_FILE ${CURRENT_FILE})
-    string(REPLACE ".in" "" TARGET_FILE ${TARGET_FILE})
+    string(REGEX REPLACE ".in$" "" TARGET_FILE ${TARGET_FILE})
     #MESSAGE(STATUS "configuring  ${TARGET_FILE}" )
     string(REPLACE "${srcdir}/${subdirectory}" "" TARGET_FILE ${TARGET_FILE})
     configure_file(${CURRENT_FILE} ${PROJECT_BINARY_DIR}/${subdirectory}/${TARGET_FILE} ${configure_option})
@@ -37,14 +37,14 @@ function(ConfigureFilesToSystemtest srcdir subdirectory globexpression configure
 endfunction()
 
 
-
 # extract  db version from cats.h
 file(STRINGS ${CMAKE_SOURCE_DIR}/core/src/cats/cats.h DB_VERSION_STRING REGEX .*BDB_VERSION.*)
 string(REGEX MATCH [0-9]+ BDB_VERSION ${DB_VERSION_STRING})
 
 find_program(PERL perl)
-
-
+find_program(PYTHON python)
+find_program(PHP php)
+find_program(CHROMEDRIVER chromedriver)
 
 # set variable values to be replaced by configure_file
 #set(DEFAULT_DB_TYPE  ${default_db_backend})
@@ -102,7 +102,6 @@ set(working_dir ${PROJECT_BINARY_DIR}/working)
 set(piddir ${PROJECT_BINARY_DIR}/piddir)
 file(MAKE_DIRECTORY ${piddir})
 
-
 #set(BASEPORT ${dir_port})
 
 # for config-lib.sh: do not remove @DB___@ but replace them with the original
@@ -110,10 +109,6 @@ set(DB_NAME @DB_NAME@)
 set(DB_USER @DB_USER@)
 set(DB_PASS @DB_PASS@)
 set(DB_VERSION @DB_VERSION@)
-
-
-
-
 
 ConfigureFilesToSystemtest("systemtests"  "data" "*.tgz" COPYONLY)
 
@@ -167,6 +162,7 @@ set(SYSTEM_TESTS
   backup-bscan
   copy-bscan
   copy-remote-bscan
+  webui-selenium
 )
 
 IF(PAM_WRAPPER_LIBRARIES)
@@ -182,7 +178,7 @@ IF(PAM_WRAPPER_LIBRARIES)
             set(PAM_EXEC_FOUND TRUE)
             list(APPEND SYSTEM_TESTS "bconsole-pam")
         ENDIF()
-        
+
         MESSAGE( STATUS "PAM_EXEC_FOUND:     " ${PAM_EXEC_FOUND} )
 
     ENDIF()
@@ -216,11 +212,15 @@ foreach(TEST_NAME ${SYSTEM_TESTS})
   math(EXPR  fd_port "${BASEPORT} + 1")
   math(EXPR  sd_port "${BASEPORT} + 2")
   math(EXPR sd2_port "${BASEPORT} + 3")
+  math(EXPR php_port "${BASEPORT} + 4")
 
 
   # set(DEFAULT_DB_TYPE )
   set(archivedir ${current_test_directory}/storage)
   set(confdir ${current_test_directory}/etc/bareos)
+
+  # set webui conf dir
+  set(webuiconfdir ${current_test_directory}/etc/bareos-webui)
 
   set(logdir ${current_test_directory}/log)
   set(tmpdir ${current_test_directory}/tmp)
@@ -229,9 +229,16 @@ foreach(TEST_NAME ${SYSTEM_TESTS})
 
   file(MAKE_DIRECTORY ${archivedir})
   file(MAKE_DIRECTORY ${confdir})
+  file(MAKE_DIRECTORY ${webuiconfdir})
   file(MAKE_DIRECTORY ${logdir})
   file(MAKE_DIRECTORY ${tmpdir})
   file(MAKE_DIRECTORY ${working_dir})
+
+  # webui
+  IF(${TEST_NAME} STREQUAL "webui-selenium")
+    configure_file("tests/webui-selenium/global.php.in" "tests/webui-selenium/webui/config/autoload/global.php" @ONLY)
+    configure_file("tests/webui-selenium/directors.ini.in" "tests/webui-selenium/etc/bareos-webui/directors.ini" @ONLY)
+  ENDIF()
 
   ConfigureFilesToSystemtest("systemtests"  "tests/${TEST_NAME}" "*" @ONLY)
 
@@ -296,3 +303,4 @@ execute_process(COMMAND
 
 execute_process(COMMAND
   ${CMAKE_COMMAND} -E create_symlink ${scriptdir}/bareos ${bindir}/bareos)
+
