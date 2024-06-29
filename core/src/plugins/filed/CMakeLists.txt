@@ -99,15 +99,7 @@ if(HAVE_GLUSTERFS AND ENABLE_GFAPI_FD)
 endif()
 
 if(HAVE_ZFS)
-  add_library(zfs-fd MODULE zfs/zfs-fd.cc)
-  set_target_properties(zfs-fd PROPERTIES PREFIX "")
-  install(
-    TARGETS zfs-fd
-    DESTINATION ${plugindir}
-    COMPONENT filedaemon
-  )
-  target_link_libraries(zfs-fd PkgConfig::ZFS)
-  target_include_directories(zfs-fd PRIVATE ${ZFS_INCLUDE_DIRS})
+  add_subdirectory(zfs)  
 endif()
 
 include(DebugEdit)
