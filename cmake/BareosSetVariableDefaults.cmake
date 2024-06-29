@@ -335,6 +335,7 @@ else()
 endif()
 
 option(acl "Enable ACL support" ON)
+option(zfs "Enable ZFS support" OFF)
 mark_as_advanced(acl)
 option(lmdb "Enable LMDP" ON)
 mark_as_advanced(lmdb)
