@@ -18,7 +18,11 @@ message("Entering ${CMAKE_CURRENT_SOURCE_DIR}")
 string(TIMESTAMP ZFS_BUILD_STAMP "%Y-%m-%d %H:%M:%S" UTC)
 set(ZFS_BUILD_VERSION "0.0.1")
 
-add_library(zfs-fd MODULE zfs-fd.cc)
+set(SOURCES
+  zfs-fd-config.cpp
+  zfs-fd.cc
+)
+add_library(zfs-fd MODULE ${SOURCES})
 set_target_properties(zfs-fd PROPERTIES PREFIX "")
 install(
   TARGETS zfs-fd

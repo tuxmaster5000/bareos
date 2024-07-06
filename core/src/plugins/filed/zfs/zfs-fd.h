@@ -34,6 +34,8 @@
 #include "filed/fd_plugins.h"
 #include "plugins/include/common.h"
 
+#include "zfs-fd-config.h"
+
 namespace filedaemon {
 
 #define PLUGIN_LICENSE "GPLv3+"
@@ -48,12 +50,12 @@ namespace filedaemon {
   " option2 bar\n" \
   " option2 foo"
 
-/* Pointers to Bareos functions */
+// Pointers to Bareos functions
 static CoreFunctions* bareos_core_functions = nullptr;
 static PluginApiDefinition* bareos_plugin_interface_version = nullptr;
 
 
-/* Forward referenced functions */
+// Forward referenced functions
 static bRC newPlugin(PluginContext* ctx);
 static bRC freePlugin(PluginContext* ctx);
 static bRC getPluginValue(PluginContext* ctx, pVariable var, void* value);
@@ -74,12 +76,7 @@ static bRC setXattr(PluginContext* ctx, xattr_pkt* xp);
 
 static bRC plugin_has_all_arguments(PluginContext* ctx);
 
-/* Plugin private context */
-struct plugin_ctx {
-  char* plugin_options;
-};
-
 static const int debuglevel = 150;
 
-} /* namespace filedaemon */
-#endif /* ZFS_FD_HEADER */
+} // namespace filedaemon
+#endif // ZFS_FD_HEADER
