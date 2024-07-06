@@ -74,8 +74,6 @@ static bRC setAcl(PluginContext* ctx, acl_pkt* ap);
 static bRC getXattr(PluginContext* ctx, xattr_pkt* xp);
 static bRC setXattr(PluginContext* ctx, xattr_pkt* xp);
 
-static bRC plugin_has_all_arguments(PluginContext* ctx);
-
 static const int debuglevel = 150;
 
 } // namespace filedaemon

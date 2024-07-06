@@ -18,3 +18,13 @@
 // Tuxmaster5000, Jun 2024
 
 #include "zfs-fd-config.h"
+
+ZFSfdConfig::ZFSfdConfig() {
+	setSnapshotPrefix("bareos");
+}
+void ZFSfdConfig::setSnapshotPrefix(std::string prefix) {
+	m_snapshot_prefix = prefix;	
+}
+const std::string& ZFSfdConfig::getSnapshotPrefix() const {
+	return m_snapshot_prefix;
+}

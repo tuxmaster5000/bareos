@@ -145,9 +145,6 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
 }
 // Start the backup of an file
 static bRC startBackupFile(PluginContext* ctx, [[maybe_unused]] save_pkt* sp) {
-  if (plugin_has_all_arguments(ctx) != bRC_OK) {
-    return bRC_Error; 
-  }
   //time_t now;
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
@@ -163,10 +160,7 @@ static bRC endBackupFile([[maybe_unused]] PluginContext* ctx) {
   return bRC_OK;
 }
 // When the restore starts
-static bRC startRestoreFile(PluginContext* ctx, [[maybe_unused]] const char* cmd) {
-  if (plugin_has_all_arguments(ctx) != bRC_OK) {
-    return bRC_Error;
-  }
+static bRC startRestoreFile([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] const char* cmd) {
   return bRC_OK;
 }
 // When the restore ends
@@ -220,18 +214,5 @@ static bRC setXattr([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] xattr_
 }
 
 // Plug-In functions
-static bRC plugin_has_all_arguments(PluginContext* ctx) 
-{
-  bRC retval = bRC_OK;
-  ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
-  if (!p_ctx) {
-    return bRC_Error;
-  }
-
-  // Must be done
-
-  return retval;
-}
-
 
 } // namespace filedaemon

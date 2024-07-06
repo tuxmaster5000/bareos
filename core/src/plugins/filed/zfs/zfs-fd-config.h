@@ -20,8 +20,16 @@
 
 #ifndef ZFS_FD_CONFIG_H
 #define ZFS_FD_CONFIG_H
+
+#include <string>
+
 class ZFSfdConfig {
 	public:
-		ZFSfdConfig() {};
+		ZFSfdConfig();
+		void setSnapshotPrefix(std::string prefix);
+		const std::string& getSnapshotPrefix() const;
+	private:
+		std::string m_snapshot_prefix;
+		
 };
 #endif // ZFS_FD_CONFIG_H
