@@ -27,9 +27,13 @@ class ZFSfdConfig {
 	public:
 		ZFSfdConfig();
 		void setSnapshotPrefix(std::string prefix);
+		void addTank(std::string tank);
+		void addTanks(std::list<std::string> tanks);
 		const std::string& getSnapshotPrefix() const;
+		const std::list<std::string>& getTanks() const;
 	private:
 		std::string m_snapshot_prefix;
+		std::list<std::string> m_tanks;
 		
 };
 #endif // ZFS_FD_CONFIG_H

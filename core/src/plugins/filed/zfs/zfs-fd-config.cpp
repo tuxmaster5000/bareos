@@ -28,3 +28,14 @@ void ZFSfdConfig::setSnapshotPrefix(std::string prefix) {
 const std::string& ZFSfdConfig::getSnapshotPrefix() const {
 	return m_snapshot_prefix;
 }
+void ZFSfdConfig::addTank(std::string tank) {
+	m_tanks.push_back(tank)
+}
+void ZFSfdConfig::addTanks(std::list<std::string> tanks) {
+	m_tanks.sort();
+	m_tanks.merge(tanks);
+        m_tanks.unique();
+}
+const std::list<std::string>& ZFSfdConfig::getTanks() const {
+	return m_tanks;
+}
