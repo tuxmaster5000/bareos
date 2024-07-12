@@ -76,6 +76,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pull-request-template: add milestone check to reviewers list [PR #1868]
 - contrib: add pure python statefile parser [PR #1789]
 - Use only MinGW VSS [PR #1847]
+- VMware Plugin: Adapt to Python 3.12 [PR #1850]
+- freebsd: fix build issues with ports tree 2024Q3 [PR #1883]
+- Improve PythonFdWrapper class [PR #1846]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
@@ -87,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - github: introduce template for issues [PR #1716]
 - docs: improve pluginAPI docs [PR #1805]
 - Fix mistake in VolumeManagement.rst [PR #1829]
+- docs: improve Restoring a Bareos Server section [PR #1878]
 
 ### Fixed
 - dird: fix `purge oldest volume` [PR #1628]
@@ -105,6 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix sql error on bad virtualfull; detect parsing errors with strtod [PR #1725]
 - windows: fix some crashes, change handling of invalid paths; lex: add better error detection; accurate: fix out of bounds writes [PR #1793]
 - create_bareos_database: fix `db_name` not being double quoted [PR #1865]
+- fix warnings on FreeBSD 13.3 compiler [PR #1881]
+- dir: fix crash on purge with job without client [PR #1857]
 
 [PR #1538]: https://github.com/bareos/bareos/pull/1538
 [PR #1581]: https://github.com/bareos/bareos/pull/1581
@@ -193,8 +199,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1821]: https://github.com/bareos/bareos/pull/1821
 [PR #1829]: https://github.com/bareos/bareos/pull/1829
 [PR #1840]: https://github.com/bareos/bareos/pull/1840
+[PR #1846]: https://github.com/bareos/bareos/pull/1846
 [PR #1847]: https://github.com/bareos/bareos/pull/1847
+[PR #1850]: https://github.com/bareos/bareos/pull/1850
 [PR #1853]: https://github.com/bareos/bareos/pull/1853
+[PR #1857]: https://github.com/bareos/bareos/pull/1857
 [PR #1865]: https://github.com/bareos/bareos/pull/1865
 [PR #1868]: https://github.com/bareos/bareos/pull/1868
+[PR #1878]: https://github.com/bareos/bareos/pull/1878
+[PR #1881]: https://github.com/bareos/bareos/pull/1881
+[PR #1883]: https://github.com/bareos/bareos/pull/1883
 [unreleased]: https://github.com/bareos/bareos/tree/master
