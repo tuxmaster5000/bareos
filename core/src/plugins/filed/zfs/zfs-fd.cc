@@ -16,6 +16,7 @@
 */
 
 #include "zfs-fd.h"
+#include <exception>
 
 /* ZFS header*/
 // #include <libzfs.h>
@@ -75,8 +76,11 @@ bRC unloadPlugin() {
 
 // Create a new instance of the plugin i.e. allocate our private storage
 static bRC newPlugin(PluginContext* ctx) {
-  ZFSfdConfig* p_ctx =  new ZFSfdConfig();
-  if (!p_ctx) {
+  try {
+    ZFSfdConfig* p_ctx =  new ZFSfdConfig();
+  }
+  catch (exception& e) {
+     Jmsg(ctx, M_FATAL, "zfs-fd: unable to create the configuration object. %d\n", e.what());
     return bRC_Error;
   }
   ctx->plugin_private_context = (void*)p_ctx; // set our context pointer
@@ -90,8 +94,8 @@ static bRC newPlugin(PluginContext* ctx) {
 // Free a plugin instance, i.e. release our private storage
 static bRC freePlugin(PluginContext* ctx) {
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
-       
   if (!p_ctx) {
+    Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
   // free our private context.
@@ -113,6 +117,7 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   // No plug-in context -> something must be wrong.
   if (!p_ctx) {
+    Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
   switch (event->eventType) {
@@ -148,6 +153,7 @@ static bRC startBackupFile(PluginContext* ctx, [[maybe_unused]] save_pkt* sp) {
   //time_t now;
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
+    Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
   /* Not implemented */
@@ -167,6 +173,7 @@ static bRC startRestoreFile([[maybe_unused]] PluginContext* ctx, [[maybe_unused]
 static bRC endRestoreFile(PluginContext* ctx) {
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
+    Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
   return bRC_OK;
@@ -175,6 +182,7 @@ static bRC endRestoreFile(PluginContext* ctx) {
 static bRC pluginIO(PluginContext* ctx, [[maybe_unused]] io_pkt* io) {
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
+    Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
   // Not impelented now

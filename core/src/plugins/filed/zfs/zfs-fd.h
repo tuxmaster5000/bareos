@@ -49,6 +49,7 @@ namespace filedaemon {
   " option1 bar\n" \
   " option2 bar\n" \
   " option2 foo"
+#define NO_CONFIG_OBJECT_TEXT "zfs-fd: no valid config object found\n"
 
 // Pointers to Bareos functions
 static CoreFunctions* bareos_core_functions = nullptr;

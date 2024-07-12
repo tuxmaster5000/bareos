@@ -29,13 +29,52 @@ const std::string& ZFSfdConfig::getSnapshotPrefix() const {
 	return m_snapshot_prefix;
 }
 void ZFSfdConfig::addTank(std::string tank) {
-	m_tanks.push_back(tank)
+	m_tanks.push_back(tank);
 }
 void ZFSfdConfig::addTanks(std::list<std::string> tanks) {
-	m_tanks.sort();
-	m_tanks.merge(tanks);
-        m_tanks.unique();
+	mergeLists(tanks, m_tanks);
 }
 const std::list<std::string>& ZFSfdConfig::getTanks() const {
 	return m_tanks;
+}
+void ZFSfdConfig::addExcludeDataset(std::string dataset) {
+	m_exclude_datasets.push_back(dataset);
+}
+void ZFSfdConfig::addExcludeDatasets(std::list<std::string> datasets) {
+	mergeLists(datasets, m_exclude_datasets);
+}
+const std::list<std::string>& ZFSfdConfig::getExcludeDatasets() const {
+	return m_exclude_datasets;
+}
+void ZFSfdConfig::addExcludeVolume(std::string volume) {
+	m_exclude_volumes.push_back(volume);
+}
+void ZFSfdConfig::addExcludeVolumes(std::list<std::string> volumes) {
+	mergeLists(volumes, m_exclude_volumes);
+}
+const std::list<std::string>& ZFSfdConfig::getExcludeVolumes() const {
+	return m_exclude_volumes;
+}
+void ZFSfdConfig::addDataset(std::string dataset) {
+	m_datasets.push_back(dataset);
+}
+void ZFSfdConfig::addDatasets(std::list<std::string> datasets) {
+	mergeLists(datasets, m_datasets);
+}
+const std::list<std::string>& ZFSfdConfig::getDatasets() const {
+	return m_datasets;
+}
+void ZFSfdConfig::addVolume(std::string volume) {
+	m_volumes.push_back(volume);
+}
+void ZFSfdConfig::addVolumes(std::list<std::string> volumes) {
+	 mergeLists(volumes, m_volumes);
+}
+const std::list<std::string>&  ZFSfdConfig::getVolumes() const {
+	return m_volumes;
+}
+void ZFSfdConfig::mergeLists(const std::list<std::string> &source, std::list<std::string> &target) {
+	target.sort();
+	target.merge(&source);
+	target.unique();
 }
