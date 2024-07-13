@@ -1,0 +1,14 @@
+Vorher:
+sudo dnf install libzfs5-devel
+Bauen:
+rm -rf build-root
+cmake -B build-root -Dacl=off -Dclient-only=on -Dzfs=on
+cmake --build build-root --parallel
+Doku:
+rm -rf build-root-doc
+python3 -m venv build-root-doc
+source build-root-doc/bin/activate
+pip install sphinx sphinxcontrib-actdiag sphinx_issues sphinxcontrib.blockdiag sphinxcontrib.nwdiag sphinxcontrib.plantuml sphinxcontrib.seqdiag sphinx-csv-filter sphinx_copybutton sphinx-rtd-theme m2r2
+cmake -B build-root-doc -Ddocs-only=on
+cmake --build build-root-doc --parallel
+deactivate
