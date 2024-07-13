@@ -1,1 +1,2 @@
-- Test der Konfigurationsparamter via C++ Exceptions
+- Test ob das Add-On geladen werden kann
+- Test ob die Parameter geladen werden können und der Parametertest geht

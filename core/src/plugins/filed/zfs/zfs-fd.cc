@@ -16,7 +16,9 @@
 */
 
 #include "zfs-fd.h"
-#include <exception>
+#include <new>
+#include <stdexcept>
+
 
 /* ZFS header*/
 // #include <libzfs.h>
@@ -76,10 +78,11 @@ bRC unloadPlugin() {
 
 // Create a new instance of the plugin i.e. allocate our private storage
 static bRC newPlugin(PluginContext* ctx) {
+  ZFSfdConfig* p_ctx = nullptr;
   try {
-    ZFSfdConfig* p_ctx =  new ZFSfdConfig();
+    p_ctx =  new ZFSfdConfig();
   }
-  catch (exception& e) {
+  catch (const std::bad_alloc& e) {
      Jmsg(ctx, M_FATAL, "zfs-fd: unable to create the configuration object. %d\n", e.what());
     return bRC_Error;
   }
@@ -156,7 +159,9 @@ static bRC startBackupFile(PluginContext* ctx, [[maybe_unused]] save_pkt* sp) {
     Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
-  /* Not implemented */
+  if (!checkConfig(ctx)) { return bRC_Error; }
+  
+/* Not implemented */
   return bRC_Error;
 }
 // Done with backup of this file
@@ -167,6 +172,7 @@ static bRC endBackupFile([[maybe_unused]] PluginContext* ctx) {
 }
 // When the restore starts
 static bRC startRestoreFile([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] const char* cmd) {
+  if (!checkConfig(ctx)) { return bRC_Error; }
   return bRC_OK;
 }
 // When the restore ends
@@ -176,6 +182,7 @@ static bRC endRestoreFile(PluginContext* ctx) {
     Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
     return bRC_Error;
   }
+  
   return bRC_OK;
 }
 // Now the data I/O will be done
@@ -222,5 +229,16 @@ static bRC setXattr([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] xattr_
 }
 
 // Plug-In functions
+static bool checkConfig(PluginContext* ctx) {
+  ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
+  try {
+    p_ctx->verifyConfig();
+  }
+  catch (std::invalid_argument const& e) {
+    Jmsg(ctx, M_FATAL, "zfs-fd: config error: %d\n", e.what());
+    return false;
+  }
+  return true;
+}
 
 } // namespace filedaemon

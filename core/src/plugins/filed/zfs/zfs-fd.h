@@ -50,6 +50,7 @@ namespace filedaemon {
   " option2 bar\n" \
   " option2 foo"
 #define NO_CONFIG_OBJECT_TEXT "zfs-fd: no valid config object found\n"
+#define MAGIC_PATH "/ZFS-Bareos-Backup"
 
 // Pointers to Bareos functions
 static CoreFunctions* bareos_core_functions = nullptr;
@@ -76,6 +77,7 @@ static bRC getXattr(PluginContext* ctx, xattr_pkt* xp);
 static bRC setXattr(PluginContext* ctx, xattr_pkt* xp);
 
 static const int debuglevel = 150;
+static bool checkConfig(PluginContext* ctx);
 
 } // namespace filedaemon
 #endif // ZFS_FD_HEADER

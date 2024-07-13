@@ -15,6 +15,10 @@
 
 message("Entering ${CMAKE_CURRENT_SOURCE_DIR}")
 
+# Because std::set contains, only available since C++20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 string(TIMESTAMP ZFS_BUILD_STAMP "%Y-%m-%d %H:%M:%S" UTC)
 set(ZFS_BUILD_VERSION "0.0.1")
 

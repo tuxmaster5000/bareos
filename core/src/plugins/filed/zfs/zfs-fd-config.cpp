@@ -18,6 +18,7 @@
 // Tuxmaster5000, Jun 2024
 
 #include "zfs-fd-config.h"
+#include <stdexcept>
 
 ZFSfdConfig::ZFSfdConfig() {
 	setSnapshotPrefix("bareos");
@@ -29,52 +30,63 @@ const std::string& ZFSfdConfig::getSnapshotPrefix() const {
 	return m_snapshot_prefix;
 }
 void ZFSfdConfig::addTank(std::string tank) {
-	m_tanks.push_back(tank);
+	m_tanks.insert(tank);
 }
-void ZFSfdConfig::addTanks(std::list<std::string> tanks) {
-	mergeLists(tanks, m_tanks);
+void ZFSfdConfig::addTanks(std::set<std::string> tanks) {
+	m_tanks.insert(tanks.begin(), tanks.end());
 }
-const std::list<std::string>& ZFSfdConfig::getTanks() const {
+const std::set<std::string>& ZFSfdConfig::getTanks() const {
 	return m_tanks;
 }
 void ZFSfdConfig::addExcludeDataset(std::string dataset) {
-	m_exclude_datasets.push_back(dataset);
+	m_exclude_datasets.insert(dataset);
 }
-void ZFSfdConfig::addExcludeDatasets(std::list<std::string> datasets) {
-	mergeLists(datasets, m_exclude_datasets);
+void ZFSfdConfig::addExcludeDatasets(std::set<std::string> datasets) {
+	m_exclude_datasets.insert(datasets.begin(), datasets.end());
 }
-const std::list<std::string>& ZFSfdConfig::getExcludeDatasets() const {
+const std::set<std::string>& ZFSfdConfig::getExcludeDatasets() const {
 	return m_exclude_datasets;
 }
 void ZFSfdConfig::addExcludeVolume(std::string volume) {
-	m_exclude_volumes.push_back(volume);
+	m_exclude_volumes.insert(volume);
 }
-void ZFSfdConfig::addExcludeVolumes(std::list<std::string> volumes) {
-	mergeLists(volumes, m_exclude_volumes);
+void ZFSfdConfig::addExcludeVolumes(std::set<std::string> volumes) {
+	m_exclude_volumes.insert(volumes.begin(), volumes.end());
 }
-const std::list<std::string>& ZFSfdConfig::getExcludeVolumes() const {
+const std::set<std::string>& ZFSfdConfig::getExcludeVolumes() const {
 	return m_exclude_volumes;
 }
 void ZFSfdConfig::addDataset(std::string dataset) {
-	m_datasets.push_back(dataset);
+	m_datasets.insert(dataset);
 }
-void ZFSfdConfig::addDatasets(std::list<std::string> datasets) {
-	mergeLists(datasets, m_datasets);
+void ZFSfdConfig::addDatasets(std::set<std::string> datasets) {
+	m_datasets.insert(datasets.begin(), datasets.end());
 }
-const std::list<std::string>& ZFSfdConfig::getDatasets() const {
+const std::set<std::string>& ZFSfdConfig::getDatasets() const {
 	return m_datasets;
 }
 void ZFSfdConfig::addVolume(std::string volume) {
-	m_volumes.push_back(volume);
+	m_volumes.insert(volume);
 }
-void ZFSfdConfig::addVolumes(std::list<std::string> volumes) {
-	 mergeLists(volumes, m_volumes);
+void ZFSfdConfig::addVolumes(std::set<std::string> volumes) {
+	m_volumes.insert(volumes.begin(), volumes.end());
 }
-const std::list<std::string>&  ZFSfdConfig::getVolumes() const {
+const std::set<std::string>&  ZFSfdConfig::getVolumes() const {
 	return m_volumes;
 }
-void ZFSfdConfig::mergeLists(const std::list<std::string> &source, std::list<std::string> &target) {
-	target.sort();
-	target.merge(&source);
-	target.unique();
+void ZFSfdConfig::verifyConfig() {
+	if (m_snapshot_prefix.empty())
+		throw std::invalid_argument("The snapshot prefix can't be empty.");
+	// When all tanks are selected, then the includes must be empty
+	if (m_tanks.empty() and (!m_datasets.empty() or !m_volumes.empty()))
+		throw std::invalid_argument("When all tanks are selected, include of volumes or data sets makes no sense.");
+	// Check when 'none' is set, that it will be the only tank
+	if (m_tanks.contains("none") and m_tanks.size() > 1)
+		throw std::invalid_argument("When tanks is set to none, then it can be the only tank.");
+        // When the tanks are set to 'none' then includes must be set.
+	if (*m_tanks.cbegin() == "none" and (m_datasets.empty() and m_volumes.empty()))
+		throw std::invalid_argument("When tanks set to none, the datasets/volumes must be set.");
+	// When datasets/volumes are set, then exclude settings makes no sense.
+	if (*m_tanks.cbegin() == "none" and (!m_exclude_datasets.empty() or !m_exclude_volumes.empty()))
+		throw std::invalid_argument("When settings the datasets/volumes by hand, the exclude settings make no sense.");
 }

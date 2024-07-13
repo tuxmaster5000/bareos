@@ -22,34 +22,35 @@
 #define ZFS_FD_CONFIG_H
 
 #include <string>
+#include <set>
 
 class ZFSfdConfig {
 	public:
 		ZFSfdConfig();
 		void setSnapshotPrefix(std::string prefix);
 		void addTank(std::string tank);
-		void addTanks(std::list<std::string> tanks);
+		void addTanks(std::set<std::string> tanks);
 		void addExcludeDataset(std::string dataset);
-		void addExcludeDatasets(std::list<std::string> datasets);
+		void addExcludeDatasets(std::set<std::string> datasets);
 		void addExcludeVolume(std::string volume);
-		void addExcludeVolumes(std::list<std::string> volumes);
+		void addExcludeVolumes(std::set<std::string> volumes);
 		void addDataset(std::string dataset);
-		void addDatasets(std::list<std::string> datasets);
+		void addDatasets(std::set<std::string> datasets);
 		void addVolume(std::string volume);
-		void addVolumes(std::list<std::string> volumes);
+		void addVolumes(std::set<std::string> volumes);
+		void verifyConfig();
 		const std::string& getSnapshotPrefix() const;
-		const std::list<std::string>& getTanks() const;
-		const std::list<std::string>& getExcludeDatasets() const;
-		const std::list<std::string>& getExcludeVolumes() const;
-		const std::list<std::string>& getDatasets() const;
-		const std::list<std::string>& getVolumes() const;
+		const std::set<std::string>& getTanks() const;
+		const std::set<std::string>& getExcludeDatasets() const;
+		const std::set<std::string>& getExcludeVolumes() const;
+		const std::set<std::string>& getDatasets() const;
+		const std::set<std::string>& getVolumes() const;
 	private:
-		void mergeLists(const std::list<std::string> &source, std::list<std::string> &target);
 		std::string m_snapshot_prefix;
-		std::list<std::string> m_tanks;
-		std::list<std::string> m_exclude_datasets;
-		std::list<std::string> m_exclude_volumes;
-		std::list<std::string> m_datasets;
-		std::list<std::string> m_volumes;
+		std::set<std::string> m_tanks;
+		std::set<std::string> m_exclude_datasets;
+		std::set<std::string> m_exclude_volumes;
+		std::set<std::string> m_datasets;
+		std::set<std::string> m_volumes;
 };
 #endif // ZFS_FD_CONFIG_H
