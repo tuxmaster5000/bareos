@@ -67,6 +67,9 @@
 #include "lib/version.h"
 
 #include <cassert>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace directordaemon {
 
@@ -171,7 +174,7 @@ static ResourceItem dir_items[] = {
   { "CatalogAcl", CFG_TYPE_ACL, ITEM(resource, ACL_lists), Catalog_ACL, 0, NULL, NULL,\
      "Lists the Catalog resources, this resource has access to. The special keyword *all* allows access to all Catalog resources." },\
   { "WhereAcl", CFG_TYPE_ACL, ITEM(resource, ACL_lists), Where_ACL, 0, NULL, NULL,\
-     "Specifies the base directories, where files could be restored. An empty string allows restores to all directories." },\
+     "Specifies the base directories, where files could be restored." },\
   { "PluginOptionsAcl", CFG_TYPE_ACL, ITEM(resource, ACL_lists), PluginOptions_ACL, 0, NULL, NULL,\
      "Specifies the allowed plugin options. An empty strings allows all Plugin Options." }
 
@@ -913,6 +916,22 @@ bool PrintConfigSchemaJson(PoolMem& buffer)
 
   return true;
 }
+
+namespace {
+template <typename T>
+std::shared_ptr<T> GetRuntimeStatus(const std::string& name)
+{
+  static std::unordered_map<std::string, std::weak_ptr<T>> map{};
+
+  std::shared_ptr<T> sptr = map[name].lock();
+  if (!sptr) {
+    sptr = std::make_shared<T>();
+    map[name] = sptr;
+  }
+  Dmsg0(50, "Returning RuntimeStatus with use_count=%ld\n", sptr.use_count());
+  return sptr;
+}
+}  // namespace
 
 static bool CmdlineItem(PoolMem* buffer, ResourceItem* item)
 {
@@ -2241,32 +2260,12 @@ static bool UpdateResourcePointer(int type, ResourceItem* items)
               res_dir->resource_name_);
         return false;
       } else {
-        int status;
-
         p->paired_storage = res_store->paired_storage;
         p->tls_cert_.allowed_certificate_common_names_
             = std::move(res_store->tls_cert_.allowed_certificate_common_names_);
-
         p->device = res_store->device;
-
-        p->runtime_storage_status = new RuntimeStorageStatus;
-
-        if ((status = pthread_mutex_init(
-                 &p->runtime_storage_status->changer_lock, NULL))
-            != 0) {
-          BErrNo be;
-
-          Emsg1(M_ERROR_TERM, 0, T_("pthread_mutex_init: ERR=%s\n"),
-                be.bstrerror(status));
-        }
-        if ((status = pthread_mutex_init(
-                 &p->runtime_storage_status->ndmp_deviceinfo_lock, NULL))
-            != 0) {
-          BErrNo be;
-
-          Emsg1(M_ERROR_TERM, 0, T_("pthread_mutex_init: ERR=%s\n"),
-                be.bstrerror(status));
-        }
+        p->runtime_storage_status
+            = GetRuntimeStatus<RuntimeStorageStatus>(p->resource_name_);
       }
       break;
     }
@@ -2332,11 +2331,7 @@ static bool UpdateResourcePointer(int type, ResourceItem* items)
           p->RestoreWhere = NULL;
         }
 
-        if (type == R_JOB) {
-          p->rjs = (runtime_job_status_t*)malloc(sizeof(runtime_job_status_t));
-          runtime_job_status_t empty_rjs;
-          *p->rjs = empty_rjs;
-        }
+        p->rjs = GetRuntimeStatus<RuntimeJobStatus>(p->resource_name_);
       }
       break;
     }
@@ -2370,10 +2365,7 @@ static bool UpdateResourcePointer(int type, ResourceItem* items)
         p->tls_cert_.allowed_certificate_common_names_ = std::move(
             res_client->tls_cert_.allowed_certificate_common_names_);
 
-        p->rcs
-            = (runtime_client_status_t*)malloc(sizeof(runtime_client_status_t));
-        runtime_client_status_t empty_rcs;
-        *p->rcs = empty_rcs;
+        p->rcs = GetRuntimeStatus<RuntimeClientStatus>(p->resource_name_);
       }
       break;
     }
@@ -2798,7 +2790,7 @@ static void StoreAcl(LEX* lc, ResourceItem* item, int index, int pass)
     LexGetToken(lc, BCT_STRING);
     if (pass == 1) {
       if (!IsAclEntryValid(lc->str, msg)) {
-        Emsg1(M_ERROR, 0, T_("Cannot store Acl: %s\n"), msg.data());
+        scan_err1(lc, T_("Cannot store Acl: %s"), msg.data());
         return;
       }
       list->append(strdup(lc->str));
@@ -3867,7 +3859,6 @@ static void FreeResource(BareosResource* res, int type)
       if (p->lanaddress) { free(p->lanaddress); }
       if (p->username) { free(p->username); }
       if (p->password_.value) { free(p->password_.value); }
-      if (p->rcs) { free(p->rcs); }
       delete p;
       break;
     }
@@ -3881,23 +3872,6 @@ static void FreeResource(BareosResource* res, int type)
       if (p->media_type) { free(p->media_type); }
       if (p->ndmp_changer_device) { free(p->ndmp_changer_device); }
       if (p->device) { delete p->device; }
-      if (p->runtime_storage_status) {
-        if (p->runtime_storage_status->vol_list) {
-          if (p->runtime_storage_status->vol_list->contents) {
-            vol_list_t* vl;
-
-            foreach_dlist (vl, p->runtime_storage_status->vol_list->contents) {
-              if (vl->VolName) { free(vl->VolName); }
-            }
-            p->runtime_storage_status->vol_list->contents->destroy();
-            delete p->runtime_storage_status->vol_list->contents;
-          }
-          free(p->runtime_storage_status->vol_list);
-        }
-        pthread_mutex_destroy(&p->runtime_storage_status->changer_lock);
-        pthread_mutex_destroy(&p->runtime_storage_status->ndmp_deviceinfo_lock);
-        delete p->runtime_storage_status;
-      }
       delete p;
       break;
     }
@@ -3971,7 +3945,6 @@ static void FreeResource(BareosResource* res, int type)
         FreeRunscripts(p->RunScripts);
         delete p->RunScripts;
       }
-      if (p->rjs) { free(p->rjs); }
       delete p;
       break;
     }
