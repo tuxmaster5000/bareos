@@ -1,10 +1,15 @@
 .. _BackupZFS:
 
-Backup Of ZFS
+Backup of ZFS
 -------------------------------
+By default all datasets and volumes of all tanks are seleted for backup.
+By nature incremetal backups can only done for datasets, becauce ZFS don't know anything about the content of the volumes.
+So the volumes are allways full backups. This means, every incremental contains an full backup of the ZFS volumes.
+Backing up the data sets are an three step process. First take an snapshot, then backup it and remove it(When it will not be needes anymore.).
+This will garant an stable backup for the data sets.
 
-All list options are aomma seperated.
-To see the  debug messages, set the debug level to an minimum of 150.
+All list options are comma seperated. To see the debug messages, set the debug level to an minimum of 150.
+
 Used options in the plugin string are:
 
 snapshot-prefix
