@@ -39,4 +39,5 @@ target_compile_definitions(
     PRIVATE -DZFS_BUILD_VERSION="${ZFS_BUILD_VERSION}"
 )
 target_link_libraries(zfs-fd PkgConfig::ZFS)
-target_include_directories(zfs-fd PRIVATE ${ZFS_INCLUDE_DIRS})
+# Fix for https://github.com/openzfs/zfs/issues/16312
+target_include_directories(zfs-fd PRIVATE "${ZFS_INCLUDE_DIRS}/libzfs")

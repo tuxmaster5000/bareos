@@ -21,7 +21,7 @@
 
 
 /* ZFS header*/
-// #include <libzfs.h>
+#include <libzfs.h>
 
 namespace filedaemon {
 
