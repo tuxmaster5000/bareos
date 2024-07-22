@@ -21,6 +21,7 @@
 
 #define STORAGE_DAEMON
 
+#include "include/bareos.h"
 #include "lib/crypto.h"
 #include "stored/butil.h"
 #include "stored/device_control_record.h"
@@ -248,6 +249,7 @@ int main(int argc, const char* argv[])
   CLI::App app;
   std::string desc(1024, '\0');
   kBareosVersionStrings.FormatCopyright(desc.data(), desc.size(), 2023);
+  desc.resize(strlen(desc.c_str()));
   desc += "The Bareos Deduplication Estimation Tool";
   InitCLIApp(app, desc, 0);
   AddDebugOptions(app);

@@ -26,7 +26,9 @@
  * Dumb program to extract files from a Bareos backup.
  */
 
-#include <unistd.h>
+#if !defined(HAVE_MSVC)
+#  include <unistd.h>
+#endif
 #include "include/bareos.h"
 #include "include/exit_codes.h"
 #include "include/filetypes.h"
@@ -105,6 +107,8 @@ int main(int argc, char* argv[])
   InitMsg(nullptr, nullptr); /* setup message handler */
 
   OSDependentInit();
+
+  (void)WSA_Init(); /* Initialize Windows sockets */
 
   ff = init_find_files();
   binit(&g_bfd);
@@ -269,11 +273,9 @@ int main(int argc, char* argv[])
 // Cleanup of delayed restore stack with streams for later processing.
 static inline void DropDelayedDataStreams()
 {
-  DelayedDataStream* dds = nullptr;
-
   if (!delayed_streams || delayed_streams->empty()) { return; }
 
-  foreach_alist (dds, delayed_streams) { free(dds->content); }
+  for (auto* dds : delayed_streams) { free(dds->content); }
 
   delayed_streams->destroy();
 }
@@ -307,8 +309,6 @@ static inline void PushDelayedDataStream(int stream,
  */
 static inline void PopDelayedDataStreams()
 {
-  DelayedDataStream* dds = nullptr;
-
   // See if there is anything todo.
   if (!delayed_streams || delayed_streams->empty()) { return; }
 
@@ -321,7 +321,7 @@ static inline void PopDelayedDataStreams()
    * processing for the following type of streams:
    * - *_ACL_*
    * - *_XATTR_* */
-  foreach_alist (dds, delayed_streams) {
+  for (auto* dds : delayed_streams) {
     switch (dds->stream) {
       case STREAM_UNIX_ACCESS_ACL:
       case STREAM_UNIX_DEFAULT_ACL:

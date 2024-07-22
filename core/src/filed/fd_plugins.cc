@@ -3,7 +3,7 @@
 
    Copyright (C) 2007-2012 Free Software Foundation Europe e.V.
    Copyright (C) 2011-2012 Planets Communications B.V.
-   Copyright (C) 2013-2023 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2024 Bareos GmbH & Co. KG
 
    This program is Free Software; you can redistribute it and/or
    modify it under the terms of version three of the GNU Affero General Public
@@ -46,18 +46,22 @@
 #include "lib/parse_conf.h"
 
 // Function pointers to be set here (findlib)
-extern int (*plugin_bopen)(BareosFilePacket* bfd,
-                           const char* fname,
-                           int flags,
-                           mode_t mode);
-extern int (*plugin_bclose)(BareosFilePacket* bfd);
-extern ssize_t (*plugin_bread)(BareosFilePacket* bfd, void* buf, size_t count);
-extern ssize_t (*plugin_bwrite)(BareosFilePacket* bfd, void* buf, size_t count);
-extern boffset_t (*plugin_blseek)(BareosFilePacket* bfd,
-                                  boffset_t offset,
-                                  int whence);
+BAREOS_IMPORT int (*plugin_bopen)(BareosFilePacket* bfd,
+                                  const char* fname,
+                                  int flags,
+                                  mode_t mode);
+BAREOS_IMPORT int (*plugin_bclose)(BareosFilePacket* bfd);
+BAREOS_IMPORT ssize_t (*plugin_bread)(BareosFilePacket* bfd,
+                                      void* buf,
+                                      size_t count);
+BAREOS_IMPORT ssize_t (*plugin_bwrite)(BareosFilePacket* bfd,
+                                       void* buf,
+                                       size_t count);
+BAREOS_IMPORT boffset_t (*plugin_blseek)(BareosFilePacket* bfd,
+                                         boffset_t offset,
+                                         int whence);
 
-extern char* exepath;
+BAREOS_IMPORT char* exepath;
 
 namespace filedaemon {
 
@@ -350,7 +354,6 @@ bRC GeneratePluginEvent(JobControlRecord* jcr,
   int len = 0;
   bool call_if_canceled = false;
   restore_object_pkt* rop;
-  PluginContext* ctx = nullptr;
   alist<PluginContext*>* plugin_ctx_list;
   bRC rc = bRC_OK;
 
@@ -395,7 +398,7 @@ bRC GeneratePluginEvent(JobControlRecord* jcr,
       call_if_canceled = true; /* plugin *must* see this call */
       break;
     case bEventStartRestoreJob:
-      foreach_alist (ctx, plugin_ctx_list) {
+      for (auto* ctx : plugin_ctx_list) {
         ((FiledPluginContext*)ctx->core_private_context)->restoreFileStarted
             = false;
         ((FiledPluginContext*)ctx->core_private_context)->createFileCalled
@@ -421,6 +424,7 @@ bRC GeneratePluginEvent(JobControlRecord* jcr,
    *
    * See if we need to trigger the loaded plugins in reverse order. */
   if (reverse) {
+    PluginContext* ctx;
     int i{};
     foreach_alist_rindex (i, ctx, plugin_ctx_list) {
       if (!IsEventForThisPlugin(ctx->plugin, name, len)) {
@@ -435,6 +439,7 @@ bRC GeneratePluginEvent(JobControlRecord* jcr,
       }
     }
   } else {
+    PluginContext* ctx;
     int i{};
     foreach_alist_index (i, ctx, plugin_ctx_list) {
       if (!IsEventForThisPlugin(ctx->plugin, name, len)) {
@@ -462,7 +467,6 @@ bail_out:
 // Check if file was seen for accurate
 bool PluginCheckFile(JobControlRecord* jcr, char* fname)
 {
-  PluginContext* ctx = nullptr;
   alist<PluginContext*>* plugin_ctx_list;
   int retval = bRC_OK;
 
@@ -476,7 +480,7 @@ bool PluginCheckFile(JobControlRecord* jcr, char* fname)
         jcr->JobId);
 
   // Pass event to every plugin
-  foreach_alist (ctx, plugin_ctx_list) {
+  for (auto* ctx : plugin_ctx_list) {
     if (IsPluginDisabled(ctx)) { continue; }
 
     jcr->plugin_ctx = ctx;
@@ -570,7 +574,6 @@ bRC PluginOptionHandleFile(JobControlRecord* jcr,
   bRC retval = bRC_Core;
   bEvent event;
   bEventType eventType;
-  PluginContext* ctx = nullptr;
   alist<PluginContext*>* plugin_ctx_list;
 
   cmd = ff_pkt->plugin;
@@ -608,7 +611,7 @@ bRC PluginOptionHandleFile(JobControlRecord* jcr,
   if (!GetPluginName(jcr, cmd, &len)) { goto bail_out; }
 
   // Note, we stop the loop on the first plugin that matches the name
-  foreach_alist (ctx, plugin_ctx_list) {
+  for (auto* ctx : plugin_ctx_list) {
     Dmsg4(debuglevel, "plugin=%s plen=%d cmd=%s len=%d\n", ctx->plugin->file,
           ctx->plugin->file_len, cmd, len);
     if (!IsEventForThisPlugin(ctx->plugin, cmd, len)) { continue; }
@@ -651,7 +654,6 @@ int PluginSave(JobControlRecord* jcr, FindFilesPacket* ff_pkt, bool)
   int len;
   char* cmd;
   bEvent event;
-  PluginContext* ctx = nullptr;
   bEventType eventType;
   PoolMem fname(PM_FNAME);
   PoolMem link(PM_FNAME);
@@ -685,7 +687,7 @@ int PluginSave(JobControlRecord* jcr, FindFilesPacket* ff_pkt, bool)
   if (!GetPluginName(jcr, cmd, &len)) { goto bail_out; }
 
   // Note, we stop the loop on the first plugin that matches the name
-  foreach_alist (ctx, plugin_ctx_list) {
+  for (auto* ctx : plugin_ctx_list) {
     Dmsg4(debuglevel, "plugin=%s plen=%d cmd=%s len=%d\n", ctx->plugin->file,
           ctx->plugin->file_len, cmd, len);
     if (!IsEventForThisPlugin(ctx->plugin, cmd, len)) { continue; }
@@ -905,7 +907,6 @@ int PluginEstimate(JobControlRecord* jcr, FindFilesPacket* ff_pkt, bool)
   bEventType eventType;
   PoolMem fname(PM_FNAME);
   PoolMem link(PM_FNAME);
-  PluginContext* ctx = nullptr;
   alist<PluginContext*>* plugin_ctx_list;
   Attributes attr;
 
@@ -923,7 +924,7 @@ int PluginEstimate(JobControlRecord* jcr, FindFilesPacket* ff_pkt, bool)
   if (!GetPluginName(jcr, cmd, &len)) { goto bail_out; }
 
   // Note, we stop the loop on the first plugin that matches the name
-  foreach_alist (ctx, plugin_ctx_list) {
+  for (auto* ctx : plugin_ctx_list) {
     Dmsg4(debuglevel, "plugin=%s plen=%d cmd=%s len=%d\n", ctx->plugin->file,
           ctx->plugin->file_len, cmd, len);
     if (!IsEventForThisPlugin(ctx->plugin, cmd, len)) { continue; }
@@ -1088,7 +1089,6 @@ bool PluginNameStream(JobControlRecord* jcr, char* name)
   char* p = name;
   bool start;
   bool retval = true;
-  PluginContext* ctx = nullptr;
   alist<PluginContext*>* plugin_ctx_list;
 
   Dmsg1(debuglevel, "Read plugin stream string=%s\n", name);
@@ -1136,7 +1136,7 @@ bool PluginNameStream(JobControlRecord* jcr, char* name)
   if (!GetPluginName(jcr, cmd, &len)) { goto bail_out; }
 
   // Search for correct plugin as specified on the command
-  foreach_alist (ctx, plugin_ctx_list) {
+  for (auto* ctx : plugin_ctx_list) {
     bEvent event;
     bEventType eventType;
     FiledPluginContext* b_ctx;
@@ -1555,8 +1555,6 @@ BxattrExitCode PluginParseXattrStreams(
 #if defined(HAVE_XATTR)
   plugin = (Plugin*)jcr->plugin_ctx->plugin;
   if (PlugFunc(plugin)->setXattr != NULL) {
-    xattr_t* current_xattr = nullptr;
-
     xattr_value_list = new alist<xattr_t*>(10, not_owned_by_alist);
 
     if (UnSerializeXattrStream(jcr, xattr_data, content, content_length,
@@ -1568,7 +1566,7 @@ BxattrExitCode PluginParseXattrStreams(
     xattr_pkt xp;
     xp.fname = xattr_data->last_fname;
 
-    foreach_alist (current_xattr, xattr_value_list) {
+    for (auto* current_xattr : xattr_value_list) {
       xp.name = current_xattr->name;
       xp.name_length = current_xattr->name_length;
       xp.value = current_xattr->value;
@@ -1771,13 +1769,11 @@ void NewPlugins(JobControlRecord* jcr)
 // Free the plugin instances for this Job
 void FreePlugins(JobControlRecord* jcr)
 {
-  PluginContext* ctx = nullptr;
-
   if (!fd_plugin_list || !jcr->plugin_ctx_list) { return; }
 
   Dmsg2(debuglevel, "Free instance fd-plugin_ctx_list=%p JobId=%d\n",
         jcr->plugin_ctx_list, jcr->JobId);
-  foreach_alist (ctx, jcr->plugin_ctx_list) {
+  for (auto* ctx : jcr->plugin_ctx_list) {
     // Free the plugin instance
     PlugFunc(ctx->plugin)->freePlugin(ctx);
     delete static_cast<FiledPluginContext*>(ctx->core_private_context);
@@ -2175,7 +2171,6 @@ static bRC bareosGetInstanceCount(PluginContext* ctx, int* ret)
 {
   int cnt;
   JobControlRecord *jcr, *njcr;
-  PluginContext* nctx;
   FiledPluginContext* bctx;
   bRC retval = bRC_Error;
 
@@ -2185,10 +2180,8 @@ static bRC bareosGetInstanceCount(PluginContext* ctx, int* ret)
 
   cnt = 0;
   foreach_jcr (njcr) {
-    if (jcr->plugin_ctx_list) {
-      foreach_alist (nctx, jcr->plugin_ctx_list) {
-        if (nctx->plugin == bctx->plugin) { cnt++; }
-      }
+    for (auto* nctx : jcr->plugin_ctx_list) {
+      if (nctx->plugin == bctx->plugin) { cnt++; }
     }
   }
   endeach_jcr(njcr);

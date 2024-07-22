@@ -71,7 +71,7 @@
 #include "lib/version.h"
 #include "lib/watchdog.h"
 #include "include/protocol_types.h"
-#include "include/allow_deprecated.h"
+#include "include/compiler_macro.h"
 
 namespace directordaemon {
 
@@ -1337,7 +1337,9 @@ bool GetOrCreateFilesetRecord(JobControlRecord* jcr)
     MD5_CTX md5c;
     unsigned char digest[16]; /* MD5 digest length */
     memcpy(&md5c, &jcr->dir_impl->res.fileset->md5c, sizeof(md5c));
-    ALLOW_DEPRECATED(MD5_Final(digest, &md5c));
+    IGNORE_DEPRECATED_ON;
+    MD5_Final(digest, &md5c);
+    IGNORE_DEPRECATED_OFF;
     /* Keep the flag (last arg) set to false otherwise old FileSets will
      * get new MD5 sums and the user will get Full backups on everything */
     BinToBase64(fsr.MD5, sizeof(fsr.MD5), (char*)digest, sizeof(digest), false);
@@ -1736,14 +1738,13 @@ void CreateClones(JobControlRecord* jcr)
   Dmsg2(900, "cloned=%d run_cmds=%p\n", jcr->dir_impl->cloned,
         jcr->dir_impl->res.job->run_cmds);
   if (!jcr->dir_impl->cloned && jcr->dir_impl->res.job->run_cmds) {
-    const char* runcmd = nullptr;
     JobId_t jobid;
     JobResource* job = jcr->dir_impl->res.job;
     POOLMEM* cmd = GetPoolMemory(PM_FNAME);
 
     UaContext* ua = new_ua_context(jcr);
     ua->batch = true;
-    foreach_alist (runcmd, job->run_cmds) {
+    for (auto* runcmd : job->run_cmds) {
       cmd = edit_job_codes(jcr, cmd, runcmd, "", job_code_callback_director);
       Mmsg(ua->cmd, "run %s cloned=yes", cmd);
       Dmsg1(900, "=============== Clone cmd=%s\n", ua->cmd);
