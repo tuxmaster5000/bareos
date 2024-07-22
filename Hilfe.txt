@@ -1,5 +1,7 @@
 Vorher:
 sudo dnf install libzfs5-devel
+Damit die Versionsdatei da ist
+cmake -P write_version_files.cmake
 Bauen:
 rm -rf build-root
 cmake -B build-root -Dacl=off -Dclient-only=on -Dzfs=on
