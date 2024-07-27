@@ -38,7 +38,7 @@
 
 namespace filedaemon {
 
-#define PLUGIN_LICENSE "GPLv3+"
+#define PLUGIN_LICENSE "AGPLv3"
 #define PLUGIN_AUTHOR "Tuxmaster5000"
 #define PLUGIN_DATE ZFS_BUILD_STAMP
 #define PLUGIN_VERSION ZFS_BUILD_VERSION
