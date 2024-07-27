@@ -1,0 +1,20 @@
+Client {
+        Name = Test
+        Working Directory = /tmp
+        FDAddresses = { ipv6 = { addr = ::1; port = 8888 }}
+        Plugin Directory = .
+        TLS Enable = no
+        TLS Require = no
+        
+                
+}
+Messages {
+        Name = Standard
+}
+Director {
+        Name = dummy_dir
+        Password = "demo"
+        TLS Enable = no
+        TLS Require = no
+        Enable kTLS = no
+}

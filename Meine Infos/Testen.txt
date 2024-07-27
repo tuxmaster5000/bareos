@@ -1,0 +1,12 @@
+-- Vorbereitung --
+python3 -m venv /tmp/bareos-test
+/tmp/bareos-test/bin/pip install bareos
+
+cp "Meine Infos/fd-config.txt" build-root/core/src/filed/config.txt
+cd build-root/core/src/filed
+cp ../plugins/filed/bpipe-fd.so .
+cp ../plugins/filed/zfs/zfs-fd.so .
+./bareos-fd -f -d 500 -v -c $(pwd)/config.txt
+
+-- Test der Status Ausgabe
+/tmp/bareos-test/bin/python3 "Meine Infos/test.py"
