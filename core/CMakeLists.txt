@@ -853,7 +853,7 @@ message("   client-only:                  ${build_client_only} ")
 message("   Plugin support:               ${have_plugins} ")
 message("   AFS support:                  ${have_afs} ")
 message("   ACL support:                  ${HAVE_ACL} ${ACL_LIBRARIES}")
-message("   ZFS support:                  ${HAVE_ZFS} ${ZFS_VERSION} ${ZFS_INCLUDEDIR} ${ZFS_LINK_LIBRARIES}")
+message("   ZFS support:                  ${HAVE_ZFS} ${ZFS_VERSION} ${ZFS_INCLUDE_DIRS} ${ZFS_LINK_LIBRARIES}")
 message("   XATTR support:                ${have_xattr} ")
 message(
   "   SCSI Crypto support:          ${scsi-crypto} ${HAVE_LOWLEVEL_SCSI_INTERFACE} "
