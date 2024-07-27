@@ -1,2 +1,3 @@
 - Test ob das Add-On geladen werden kann
+	Geht aber die Ausgabe der Parameter muss noch richtig gemacht werden.
 - Test ob die Parameter geladen werden können und der Parametertest geht
