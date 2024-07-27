@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2022-2023 Bareos GmbH & Co. KG
+#   Copyright (C) 2022-2024 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -26,16 +26,6 @@ if(USE_SYSTEM_CLI11)
   message(STATUS "Using system CLI11 ${CLI11_VERSION}")
 else()
   add_subdirectory(CLI11 EXCLUDE_FROM_ALL)
-endif()
-
-option(USE_SYSTEM_FMT "Use the fmt lib of the operating system" OFF)
-if(USE_SYSTEM_FMT)
-  find_package(fmt "6.2.1" CONFIG REQUIRED)
-  set_target_properties(fmt::fmt-header-only PROPERTIES IMPORTED_GLOBAL TRUE)
-  set_target_properties(fmt::fmt PROPERTIES IMPORTED_GLOBAL TRUE)
-  message(STATUS "Using system fmt ${fmt_VERSION}")
-else()
-  add_subdirectory(fmt EXCLUDE_FROM_ALL)
 endif()
 
 option(USE_SYSTEM_XXHASH "Use the xxHash lib of the operating system" OFF)
