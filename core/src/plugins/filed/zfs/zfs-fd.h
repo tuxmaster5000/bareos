@@ -43,12 +43,14 @@ namespace filedaemon {
 #define PLUGIN_DATE ZFS_BUILD_STAMP
 #define PLUGIN_VERSION ZFS_BUILD_VERSION
 #define PLUGIN_DESCRIPTION "ZFS File Daemon Plugin"
-#define PLUGIN_USAGE                                                   \
-  "zfs:option=<setting>:option2=<setting>:option3=<setting>\n" \
-  " option foo\n" \
-  " option1 bar\n" \
-  " option2 bar\n" \
-  " option2 foo"
+#define PLUGIN_USAGE \
+  "zfs:snapshot-prefix=<prefix>:tanks=<list of tanks>:exclude-datasets=<list of datasets>:exclude-volumes<list of volumes>:datasets<list of datasets>:volumes<list of volumes>\n" \
+  " snapshot-prefix: The name of prefix for the ZFS snapshots created by the plugin. ZFS-Bareos-Backup by default.\n" \
+  " tanks: The tank's to backup. All by default.\n" \
+  " exclude-datasets: Datasets to exclude from backup. None by default.\n" \
+  " exclude-volumes: Volumes to exclude from backup. None by default.\n" \
+  " datasets: Manual list of datasets to backup when tanks set to none. Empty by default.\n" \
+  " volumes: Manual list of volumes to backup when tanks set to none. Empty by default."
 #define NO_CONFIG_OBJECT_TEXT "zfs-fd: no valid config object found\n"
 #define MAGIC_PATH "/ZFS-Bareos-Backup"
 
