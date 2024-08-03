@@ -1,6 +1,6 @@
 -- Vorbereitung --
 python3 -m venv /tmp/bareos-test
-/tmp/bareos-test/bin/pip install bareos
+/tmp/bareos-test/bin/pip install python-bareos
 
 cp "Meine Infos/fd-config.txt" build-root/core/src/filed/config.txt
 cd build-root/core/src/filed
