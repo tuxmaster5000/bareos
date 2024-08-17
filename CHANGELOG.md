@@ -88,6 +88,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - msgchan: fix deadlock [PR #1858]
 - VMware Plugin: Add option restore_allow_disks_mismatch [PR #1876]
 - matrix remove obsolete SUSE [PR #1888]
+- cats: scripts add option --no-psqlrc to psql [PR #1900]
+- filed: fix python plugin crash on python <3.10 [PR #1889]
+- vadp-dumper: fix out of bounds read [PR #1908]
+- webui: fixing selenium tests [PR #1885]
+- plugins: adjust plugin info formatting [PR #1919]
+- python-bareos: fix backslash usage in regex [PR #1917]
+- Libcloud Accurate File Backup [PR #1903]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
@@ -234,5 +241,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1878]: https://github.com/bareos/bareos/pull/1878
 [PR #1881]: https://github.com/bareos/bareos/pull/1881
 [PR #1883]: https://github.com/bareos/bareos/pull/1883
+[PR #1885]: https://github.com/bareos/bareos/pull/1885
 [PR #1888]: https://github.com/bareos/bareos/pull/1888
+[PR #1889]: https://github.com/bareos/bareos/pull/1889
+[PR #1900]: https://github.com/bareos/bareos/pull/1900
+[PR #1903]: https://github.com/bareos/bareos/pull/1903
+[PR #1908]: https://github.com/bareos/bareos/pull/1908
+[PR #1917]: https://github.com/bareos/bareos/pull/1917
+[PR #1919]: https://github.com/bareos/bareos/pull/1919
 [unreleased]: https://github.com/bareos/bareos/tree/master
