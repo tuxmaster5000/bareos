@@ -1,12 +1,25 @@
+- Test ob es geladen werden kann -
 -- Vorbereitung --
 python3 -m venv /tmp/bareos-test
 /tmp/bareos-test/bin/pip install python-bareos
 
 cp "Meine Infos/fd-config.txt" build-root/core/src/filed/config.txt
-cd build-root/core/src/filed
+pushd build-root/core/src/filed
 cp ../plugins/filed/bpipe-fd.so .
 cp ../plugins/filed/zfs/zfs-fd.so .
 ./bareos-fd -f -d 500 -v -c $(pwd)/config.txt
 
--- Test der Status Ausgabe
+-- Test der Status Ausgabe --
+2. Terminal
 /tmp/bareos-test/bin/python3 "Meine Infos/test.py"
+
+- Test für Sicherungen -
+-- Vorbereitung --
+mkdir -p /tmp/bareos-zfs/
+--- ZFS ---
+Zu schreiben
+--- Bareos ---
+---- Direktor ----
+cp "Meine Infos/dir-config.txt" build-root/core/src/dird/config.txt
+pushd  build-root/core/src/dird
+./bareos-dir -f -v -d 500 -c $(pwd)/config.txt

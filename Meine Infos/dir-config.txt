@@ -1,0 +1,39 @@
+Director {
+	Name = DIR-Test
+	Password = "demo"
+	Working Directory = "/tmp/bareos-zfs"
+	Dir Addresses = { ipv6 = { addr = ::1; port = 8890 }}
+}
+Messages {
+	Name = Standart
+	Append = /tmp/bareos-zfs/dir.log = all
+}
+Pool {
+	Name = Standart
+	Storage = Standart
+}
+Client {
+	Name = FD-Test
+	Address = ::1
+	Port = 8888
+	Password = "demo"
+}
+Storage {
+	Name = Standart
+	Device = Standart
+	Media Type = Dateien
+	Password = "demo"
+	Address = :1
+	Port = 8889 
+}
+FileSet {
+	Name = Standart
+}
+Job {
+	Name = Backup-ZFS
+	Messages = Standart
+	Pool = Standart
+	Type = Backup
+	Client = FD-Test
+	File Set = Standart
+}
