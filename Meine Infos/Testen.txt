@@ -21,9 +21,9 @@ Zu schreiben
 --- Bareos ---
 ---- Direktor ----
 build-root/core/src/dird/bareos-dir -f -v -d 500 -c Meine\ Infos/dir-config.txt
---- Konsole ---
+---- Konsole ----
 build-root/core/src/console -c Meine\ Infos/console-config.txt
---- Client ---
+---- Client ----
 build-root/core/src/filed/bareos-fd -f -d 500 -v -c Meine\ Infos/fd-config.txt
--- Speicher --
+---- Speicher ----
 build-root/core/src/stored/bareos-sd -f -d 500 -v -c Meine\ Infos/sd-config.txt
