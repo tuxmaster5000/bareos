@@ -1,0 +1,6 @@
+Director {
+	Name = DIR-Test
+	Password = "demo"
+	Address = ::1
+	Dir Port = 8890
+}

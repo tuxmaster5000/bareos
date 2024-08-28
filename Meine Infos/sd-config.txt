@@ -1,0 +1,26 @@
+Storage {
+	Name = Standart
+	SD Addresses = { ipv6 = { addr = ::1; port = 8889 }}
+	Backend Directory = build-root/core/src/stored/backends
+	Working Directory = "/tmp/bareos-zfs"
+}
+Director {
+	Name = DIR-Test
+	Password = "demo"
+}
+Messages {
+	Name = Standart
+	Director = "DIR-Test" = all
+}
+Device {
+	Name = NULL
+	Media Type = NULL
+	Device Type = Fifo
+	Archive Device = /dev/null
+	 LabelMedia = yes
+  	Random Access = no
+  	AutomaticMount = no
+  	RemovableMedia = no
+  	MaximumOpenWait = 60
+  	AlwaysOpen = no
+}

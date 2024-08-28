@@ -2,7 +2,7 @@ Client {
         Name = FD-Test
         Working Directory = /tmp
         FDAddresses = { ipv6 = { addr = ::1; port = 8888 }}
-        Plugin Directory = .
+        Plugin Directory = build-root/core/src/filed
         TLS Enable = no
         TLS Require = no
         

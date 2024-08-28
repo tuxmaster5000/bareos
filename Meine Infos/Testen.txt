@@ -3,11 +3,11 @@
 python3 -m venv /tmp/bareos-test
 /tmp/bareos-test/bin/pip install python-bareos
 
-cp "Meine Infos/fd-config.txt" build-root/core/src/filed/config.txt
 pushd build-root/core/src/filed
 cp ../plugins/filed/bpipe-fd.so .
 cp ../plugins/filed/zfs/zfs-fd.so .
-./bareos-fd -f -d 500 -v -c $(pwd)/config.txt
+popd
+build-root/core/src/filed/bareos-fd -f -d 500 -v -c Meine\ Infos/fd-config.txt
 
 -- Test der Status Ausgabe --
 2. Terminal
@@ -20,6 +20,10 @@ mkdir -p /tmp/bareos-zfs/
 Zu schreiben
 --- Bareos ---
 ---- Direktor ----
-cp "Meine Infos/dir-config.txt" build-root/core/src/dird/config.txt
-pushd  build-root/core/src/dird
-./bareos-dir -f -v -d 500 -c $(pwd)/config.txt
+build-root/core/src/dird/bareos-dir -f -v -d 500 -c Meine\ Infos/dir-config.txt
+--- Konsole ---
+build-root/core/src/console -c Meine\ Infos/console-config.txt
+--- Client ---
+build-root/core/src/filed/bareos-fd -f -d 500 -v -c Meine\ Infos/fd-config.txt
+-- Speicher --
+build-root/core/src/stored/bareos-sd -f -d 500 -v -c Meine\ Infos/sd-config.txt

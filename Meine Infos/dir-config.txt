@@ -20,10 +20,10 @@ Client {
 }
 Storage {
 	Name = Standart
-	Device = Standart
-	Media Type = Dateien
+	Device = NULL
+	Media Type = NULL
 	Password = "demo"
-	Address = :1
+	Address = ::1
 	Port = 8889 
 }
 FileSet {
