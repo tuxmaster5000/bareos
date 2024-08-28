@@ -95,10 +95,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - plugins: adjust plugin info formatting [PR #1919]
 - python-bareos: fix backslash usage in regex [PR #1917]
 - Libcloud Accurate File Backup [PR #1903]
+- cats: add missing database locks [PR #1787]
+- webui: properly set focus to input box after each command [PR #1936]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
 - Remove EOL platforms [PR #1684]
+- core: fix some overlooked issues in msvc merge [PR #1912]
 
 ### Documentation
 - docs: improvements for droplet, jobdefs [PR #1581]
@@ -210,6 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1772]: https://github.com/bareos/bareos/pull/1772
 [PR #1773]: https://github.com/bareos/bareos/pull/1773
 [PR #1786]: https://github.com/bareos/bareos/pull/1786
+[PR #1787]: https://github.com/bareos/bareos/pull/1787
 [PR #1788]: https://github.com/bareos/bareos/pull/1788
 [PR #1789]: https://github.com/bareos/bareos/pull/1789
 [PR #1793]: https://github.com/bareos/bareos/pull/1793
@@ -247,6 +251,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1900]: https://github.com/bareos/bareos/pull/1900
 [PR #1903]: https://github.com/bareos/bareos/pull/1903
 [PR #1908]: https://github.com/bareos/bareos/pull/1908
+[PR #1912]: https://github.com/bareos/bareos/pull/1912
 [PR #1917]: https://github.com/bareos/bareos/pull/1917
 [PR #1919]: https://github.com/bareos/bareos/pull/1919
+[PR #1936]: https://github.com/bareos/bareos/pull/1936
 [unreleased]: https://github.com/bareos/bareos/tree/master

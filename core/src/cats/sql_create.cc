@@ -706,10 +706,7 @@ bool BareosDb::CreateFilesetRecord(JobControlRecord* jcr, FileSetDbRecord* fsr)
            "= ('%s','%s','%s','%s') WHERE FileSet='%s' AND MD5='%s' ",
            esc_fs, esc_md5, fsr->cCreateTime, esc_filesettext.c_str(), esc_fs,
            esc_md5);
-      if (QUERY_DB(jcr, cmd)) {
-        SqlFreeResult();
-        return true;
-      } else {
+      if (!QUERY_DB(jcr, cmd)) {
         Mmsg1(errmsg, T_("error updating FileSet row: ERR=%s\n"),
               sql_strerror());
         Jmsg(jcr, M_ERROR, 0, "%s", errmsg);
@@ -717,8 +714,10 @@ bool BareosDb::CreateFilesetRecord(JobControlRecord* jcr, FileSetDbRecord* fsr)
         return false;
       }
       SqlFreeResult();
+      return true;
+    } else {
+      SqlFreeResult();
     }
-    SqlFreeResult();
   }
 
   if (fsr->CreateTime == 0 && fsr->cCreateTime[0] == 0) {
@@ -777,6 +776,8 @@ bool BareosDb::WriteBatchFileRecords(JobControlRecord* jcr)
     Dmsg0(50, "db_create_file_record : no files\n");
     return true;
   }
+
+  DbLocker _{jcr->db_batch};
 
   Dmsg1(50, "db_create_file_record changes=%u\n", changes);
 
@@ -862,6 +863,7 @@ bool BareosDb::CreateBatchFileAttributesRecord(JobControlRecord* jcr,
 
   if (!jcr->batch_started) {
     if (!OpenBatchConnection(jcr)) { return false; /* error already printed */ }
+    DbLocker batch_lock{jcr->db_batch};
     if (!jcr->db_batch->SqlBatchStartFileTable(jcr)) {
       Mmsg1(errmsg, "Can't start batch mode: ERR=%s",
             jcr->db_batch->strerror());
@@ -871,6 +873,7 @@ bool BareosDb::CreateBatchFileAttributesRecord(JobControlRecord* jcr,
     jcr->batch_started = true;
   }
 
+  DbLocker batch_lock{jcr->db_batch};
   jcr->db_batch->SplitPathAndFile(jcr, ar->fname);
 
   return jcr->db_batch->SqlBatchInsertFileTable(jcr, ar);
@@ -961,6 +964,8 @@ bool BareosDb::CreateAttributesRecord(JobControlRecord* jcr,
                                       AttributesDbRecord* ar)
 {
   bool retval;
+
+  DbLocker _{this};
 
   errmsg[0] = 0;
   // Make sure we have an acceptable attributes record.
@@ -1075,14 +1080,14 @@ bool BareosDb::CommitBaseFileAttributesRecord(JobControlRecord* jcr)
  */
 bool BareosDb::CreateBaseFileList(JobControlRecord* jcr, const char* jobids)
 {
-  PoolMem buf(PM_MESSAGE);
-
   DbLocker _{this};
 
   if (!*jobids) {
     Mmsg(errmsg, T_("ERR=JobIds are empty\n"));
     return false;
   }
+
+  PoolMem buf(PM_MESSAGE);
 
   FillQuery(SQL_QUERY::create_temp_basefile, (uint64_t)jcr->JobId);
   if (!SqlQuery(cmd)) { return false; }
