@@ -97,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Libcloud Accurate File Backup [PR #1903]
 - cats: add missing database locks [PR #1787]
 - webui: properly set focus to input box after each command [PR #1936]
+- bscrypto: fix and update code, and move CLI parsing to cli11, add systemtests [PR #1734]
+- stored: reserve/acquire a device on first incoming write data [PR #1715]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
@@ -184,6 +186,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1708]: https://github.com/bareos/bareos/pull/1708
 [PR #1710]: https://github.com/bareos/bareos/pull/1710
 [PR #1713]: https://github.com/bareos/bareos/pull/1713
+[PR #1715]: https://github.com/bareos/bareos/pull/1715
 [PR #1716]: https://github.com/bareos/bareos/pull/1716
 [PR #1717]: https://github.com/bareos/bareos/pull/1717
 [PR #1718]: https://github.com/bareos/bareos/pull/1718
@@ -196,6 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1727]: https://github.com/bareos/bareos/pull/1727
 [PR #1728]: https://github.com/bareos/bareos/pull/1728
 [PR #1732]: https://github.com/bareos/bareos/pull/1732
+[PR #1734]: https://github.com/bareos/bareos/pull/1734
 [PR #1738]: https://github.com/bareos/bareos/pull/1738
 [PR #1739]: https://github.com/bareos/bareos/pull/1739
 [PR #1740]: https://github.com/bareos/bareos/pull/1740
