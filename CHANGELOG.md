@@ -99,6 +99,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - webui: properly set focus to input box after each command [PR #1936]
 - bscrypto: fix and update code, and move CLI parsing to cli11, add systemtests [PR #1734]
 - stored: reserve/acquire a device on first incoming write data [PR #1715]
+- docs: add ADR infrastructure and first ADRs [PR #1945]
+- nsi installers: remove postgresql backend [PR #1914]
+- stored: add dedupable backend [PR #1663]
+- systemtests: fix plugin postgresql testrunner-* [PR #1947]
+- webui: fix handling deleted clients in restore browser [PR #1933]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
@@ -136,6 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix runtime status [PR #1872]
 - Fix multiple ACL handling bugs [PR #1875]
 - fix #1775 plugin: fd mariabackup add support mariadb 11+ [PR #1835]
+- deb control files: depend on python3-bareos [PR #1956]
 
 [PR #1538]: https://github.com/bareos/bareos/pull/1538
 [PR #1581]: https://github.com/bareos/bareos/pull/1581
@@ -168,6 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1659]: https://github.com/bareos/bareos/pull/1659
 [PR #1661]: https://github.com/bareos/bareos/pull/1661
 [PR #1662]: https://github.com/bareos/bareos/pull/1662
+[PR #1663]: https://github.com/bareos/bareos/pull/1663
 [PR #1665]: https://github.com/bareos/bareos/pull/1665
 [PR #1670]: https://github.com/bareos/bareos/pull/1670
 [PR #1671]: https://github.com/bareos/bareos/pull/1671
@@ -256,7 +263,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1903]: https://github.com/bareos/bareos/pull/1903
 [PR #1908]: https://github.com/bareos/bareos/pull/1908
 [PR #1912]: https://github.com/bareos/bareos/pull/1912
+[PR #1914]: https://github.com/bareos/bareos/pull/1914
 [PR #1917]: https://github.com/bareos/bareos/pull/1917
 [PR #1919]: https://github.com/bareos/bareos/pull/1919
+[PR #1933]: https://github.com/bareos/bareos/pull/1933
 [PR #1936]: https://github.com/bareos/bareos/pull/1936
+[PR #1945]: https://github.com/bareos/bareos/pull/1945
+[PR #1947]: https://github.com/bareos/bareos/pull/1947
+[PR #1956]: https://github.com/bareos/bareos/pull/1956
 [unreleased]: https://github.com/bareos/bareos/tree/master
