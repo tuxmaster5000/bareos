@@ -104,6 +104,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - stored: add dedupable backend [PR #1663]
 - systemtests: fix plugin postgresql testrunner-* [PR #1947]
 - webui: fix handling deleted clients in restore browser [PR #1933]
+- console.cc: forbid @exec etc. as privileged user [PR #1950]
+- github actions python-bareos: add workflow_dispatch [PR #1966]
+- FreeBSD: fix sed inplace usage, use bin/sh as shebang for script, pkg make director dependent of database-postgresql [PR #1961]
+- dir: fix DbLocker usage [PR #1953]
+- Disable writing PRE_LABEL label-type to support WORM media [PR #1958]
+- debian: fix dedupable backend names [PR #1977]
+- external packages: use CPM packages instead of third-party directory [PR #1963]
+- scripts: remove unmaintained bareos-explorer [PR #1990]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
@@ -118,6 +126,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix mistake in VolumeManagement.rst [PR #1829]
 - docs: improve Restoring a Bareos Server section [PR #1878]
 - Update ReaR documentation [PR #1871]
+- docs: improve debuginfo install description (fix issue #1943) [PR #1980]
+- docs: add debian howto start daemons instructions [PR #1998]
+- docs: move bareos-devel to github discussion [PR #1989]
 
 ### Fixed
 - dird: fix `purge oldest volume` [PR #1628]
@@ -142,6 +153,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix multiple ACL handling bugs [PR #1875]
 - fix #1775 plugin: fd mariabackup add support mariadb 11+ [PR #1835]
 - deb control files: depend on python3-bareos [PR #1956]
+- fix include-ordering on FreeBSD that could cause build issues [PR #1972]
+- stored: fix volume size mismatch [PR #1992]
+- add Honor No Dump Flag to config output [PR #1994]
 
 [PR #1538]: https://github.com/bareos/bareos/pull/1538
 [PR #1581]: https://github.com/bareos/bareos/pull/1581
@@ -270,5 +284,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1936]: https://github.com/bareos/bareos/pull/1936
 [PR #1945]: https://github.com/bareos/bareos/pull/1945
 [PR #1947]: https://github.com/bareos/bareos/pull/1947
+[PR #1950]: https://github.com/bareos/bareos/pull/1950
+[PR #1953]: https://github.com/bareos/bareos/pull/1953
 [PR #1956]: https://github.com/bareos/bareos/pull/1956
+[PR #1958]: https://github.com/bareos/bareos/pull/1958
+[PR #1961]: https://github.com/bareos/bareos/pull/1961
+[PR #1963]: https://github.com/bareos/bareos/pull/1963
+[PR #1966]: https://github.com/bareos/bareos/pull/1966
+[PR #1972]: https://github.com/bareos/bareos/pull/1972
+[PR #1977]: https://github.com/bareos/bareos/pull/1977
+[PR #1980]: https://github.com/bareos/bareos/pull/1980
+[PR #1989]: https://github.com/bareos/bareos/pull/1989
+[PR #1990]: https://github.com/bareos/bareos/pull/1990
+[PR #1992]: https://github.com/bareos/bareos/pull/1992
+[PR #1994]: https://github.com/bareos/bareos/pull/1994
+[PR #1998]: https://github.com/bareos/bareos/pull/1998
 [unreleased]: https://github.com/bareos/bareos/tree/master
