@@ -4,7 +4,7 @@ Damit die Versionsdatei da ist
 cmake -P write_version_files.cmake
 Bauen:
 rm -rf build-root
-cmake -B build-root -Dacl=off -Dzfs=on -DENABLE_WEBUI=off -DUSE_SYSTEM_CLI11=On -DUSE_SYSTEM_XXHASH=on
+cmake -B build-root -Dacl=off -Dzfs=on -DENABLE_WEBUI=off
 cmake --build build-root --parallel
 Doku:
 rm -rf build-root-doc
