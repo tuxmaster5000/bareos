@@ -112,11 +112,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - debian: fix dedupable backend names [PR #1977]
 - external packages: use CPM packages instead of third-party directory [PR #1963]
 - scripts: remove unmaintained bareos-explorer [PR #1990]
+- build: add support for Fedora 41 [PR #1996]
+- filed: detect integer overflow during backup [PR #1952]
+- dedupable device: fix example files [PR #2029]
+- bareosfd_test.py: allow a delta of 1.1 [PR #2031]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
 - Remove EOL platforms [PR #1684]
 - core: fix some overlooked issues in msvc merge [PR #1912]
+- dird: remove BaseJob directives [PR #1969]
 
 ### Documentation
 - docs: improvements for droplet, jobdefs [PR #1581]
@@ -129,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs: improve debuginfo install description (fix issue #1943) [PR #1980]
 - docs: add debian howto start daemons instructions [PR #1998]
 - docs: move bareos-devel to github discussion [PR #1989]
+- docs: fixed typo in the filedaemon service name [PR #2027]
 
 ### Fixed
 - dird: fix `purge oldest volume` [PR #1628]
@@ -156,6 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix include-ordering on FreeBSD that could cause build issues [PR #1972]
 - stored: fix volume size mismatch [PR #1992]
 - add Honor No Dump Flag to config output [PR #1994]
+- JSON API: make sure, strings are valid UTF8 [PR #1922]
+- dird: fix mark command not accepting full windows paths [PR #1938]
 
 [PR #1538]: https://github.com/bareos/bareos/pull/1538
 [PR #1581]: https://github.com/bareos/bareos/pull/1581
@@ -280,17 +288,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1914]: https://github.com/bareos/bareos/pull/1914
 [PR #1917]: https://github.com/bareos/bareos/pull/1917
 [PR #1919]: https://github.com/bareos/bareos/pull/1919
+[PR #1922]: https://github.com/bareos/bareos/pull/1922
 [PR #1933]: https://github.com/bareos/bareos/pull/1933
 [PR #1936]: https://github.com/bareos/bareos/pull/1936
+[PR #1938]: https://github.com/bareos/bareos/pull/1938
 [PR #1945]: https://github.com/bareos/bareos/pull/1945
 [PR #1947]: https://github.com/bareos/bareos/pull/1947
 [PR #1950]: https://github.com/bareos/bareos/pull/1950
+[PR #1952]: https://github.com/bareos/bareos/pull/1952
 [PR #1953]: https://github.com/bareos/bareos/pull/1953
 [PR #1956]: https://github.com/bareos/bareos/pull/1956
 [PR #1958]: https://github.com/bareos/bareos/pull/1958
 [PR #1961]: https://github.com/bareos/bareos/pull/1961
 [PR #1963]: https://github.com/bareos/bareos/pull/1963
 [PR #1966]: https://github.com/bareos/bareos/pull/1966
+[PR #1969]: https://github.com/bareos/bareos/pull/1969
 [PR #1972]: https://github.com/bareos/bareos/pull/1972
 [PR #1977]: https://github.com/bareos/bareos/pull/1977
 [PR #1980]: https://github.com/bareos/bareos/pull/1980
@@ -298,5 +310,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1990]: https://github.com/bareos/bareos/pull/1990
 [PR #1992]: https://github.com/bareos/bareos/pull/1992
 [PR #1994]: https://github.com/bareos/bareos/pull/1994
+[PR #1996]: https://github.com/bareos/bareos/pull/1996
 [PR #1998]: https://github.com/bareos/bareos/pull/1998
+[PR #2027]: https://github.com/bareos/bareos/pull/2027
+[PR #2029]: https://github.com/bareos/bareos/pull/2029
+[PR #2031]: https://github.com/bareos/bareos/pull/2031
 [unreleased]: https://github.com/bareos/bareos/tree/master

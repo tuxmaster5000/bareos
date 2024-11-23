@@ -90,7 +90,6 @@ set(BAREOS_SRCS
     status_packet.cc
     thread_list.cc
     thread_specific_data.cc
-    timer_thread.cc
     tls.cc
     tls_conf.cc
     tls_openssl.cc
@@ -102,7 +101,6 @@ set(BAREOS_SRCS
     util.cc
     var.cc
     watchdog.cc
-    watchdog_timer.cc
     xxhash.cc
 )
 
@@ -154,7 +152,7 @@ target_compile_definitions(
 target_link_libraries(
   bareos
   PRIVATE bareosfastlz ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${LZO2_LIBRARIES}
-          ${CAM_LIBRARIES} CLI11::CLI11 xxHash::xxhash
+          ${CAM_LIBRARIES} CLI11::CLI11 xxHash::xxhash utf8cpp::utf8cpp
   PUBLIC ${THREADS_THREADS}
 )
 

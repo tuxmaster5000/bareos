@@ -45,7 +45,6 @@
 #    include <openssl/x509v3.h>
 #    include <openssl/asn1.h>
 #    include <openssl/asn1t.h>
-#    include <openssl/engine.h>
 #    include <openssl/evp.h>
 #    include <iomanip>
 #    include <sstream>
@@ -1516,16 +1515,6 @@ int InitCrypto(void)
   /* Register OpenSSL ciphers and digests */
   OpenSSL_add_all_algorithms();
 
-#  ifdef HAVE_ENGINE_LOAD_PK11
-  ENGINE_load_pk11();
-#  else
-  // Load all the builtin engines.
-  IGNORE_DEPRECATED_ON;
-  ENGINE_load_builtin_engines();
-  ENGINE_register_all_complete();
-  IGNORE_DEPRECATED_OFF;
-#  endif
-
   crypto_initialized = true;
 
   return status;
@@ -1543,11 +1532,6 @@ int CleanupCrypto(void)
   /* Ensure that we've actually been initialized; Doing this here decreases the
    * complexity of client's termination/cleanup code. */
   if (!crypto_initialized) { return 0; }
-
-#  ifndef HAVE_SUN_OS
-  // Cleanup the builtin engines.
-  ENGINE_cleanup();
-#  endif
 
   OpensslCleanupThreads();
 
@@ -1579,13 +1563,20 @@ struct CRYPTO_dynlock_value {
  *   a NULL.  Passing a NULL causes the messages to be
  *   printed by the daemon -- not very good :-(
  */
-void OpensslPostErrors(int type, const char* errstring)
+void OpensslPostErrors_impl(const char* file,
+                            int line,
+                            int type,
+                            const char* errstring)
 {
-  OpensslPostErrors(NULL, type, errstring);
+  OpensslPostErrors_impl(file, line, NULL, type, errstring);
 }
 
 // Post all per-thread openssl errors
-void OpensslPostErrors(JobControlRecord* jcr, int type, const char* errstring)
+void OpensslPostErrors_impl(const char* file,
+                            int line,
+                            JobControlRecord* jcr,
+                            int type,
+                            const char* errstring)
 {
   char buf[512];
   unsigned long sslerr;
@@ -1594,8 +1585,8 @@ void OpensslPostErrors(JobControlRecord* jcr, int type, const char* errstring)
   while ((sslerr = ERR_get_error()) != 0) {
     /* Acquire the human readable string */
     ERR_error_string_n(sslerr, buf, sizeof(buf));
-    Dmsg3(50, "jcr=%p %s: ERR=%s\n", jcr, errstring, buf);
-    Qmsg(jcr, type, 0, "%s: ERR=%s\n", errstring, buf);
+    d_msg(file, line, 50, "jcr=%p %s: ERR=%s\n", jcr, errstring, buf);
+    q_msg(file, line, jcr, type, 0, "%s: ERR=%s\n", errstring, buf);
   }
 }
 
