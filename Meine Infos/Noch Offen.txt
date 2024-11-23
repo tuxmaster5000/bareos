@@ -1,1 +1,2 @@
 - Test ob die Parameter geladen werden können und der Parametertest geht
+- Test ob man die libZFS laden kann
