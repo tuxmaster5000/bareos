@@ -102,7 +102,7 @@ static bRC freePlugin(PluginContext* ctx) {
     return bRC_Error;
   }
   // free our private context.
-  Dmsg(ctx, debuglevel, "cleanup libzfs");
+  Dmsg(ctx, debuglevel, "cleanup libzfs\n");
   cleanup_libzfs(p_ctx);
   delete p_ctx;
   p_ctx = nullptr;
@@ -129,10 +129,11 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
     case bEventJobStart:
       Dmsg(ctx, debuglevel, "zfs-fd: JobStart=%s\n", (char*)value);
       if (!init_libzfs(p_ctx)) {
+	Dmsg(ctx, debuglevel, "unable init libzfs\n%s\n", libzfs_error_init(errno));
 	Jmsg(ctx, M_FATAL, "zfs-fd: unable init libzfs\n%s\n", libzfs_error_init(errno));
         retval = bRC_Error;
       } else {
-      	Dmsg(ctx, debuglevel, "zfs-fd: init libzfs ok");
+      	Dmsg(ctx, debuglevel, "zfs-fd: init libzfs ok\n");
       }
       break;
     case bEventRestoreCommand:
