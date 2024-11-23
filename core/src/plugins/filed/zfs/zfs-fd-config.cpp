@@ -94,6 +94,6 @@ void ZFSfdConfig::verifyConfig() {
 	if (*m_tanks.cbegin() == "none" and (!m_exclude_datasets.empty() or !m_exclude_volumes.empty()))
 		throw std::invalid_argument("When settings the datasets/volumes by hand, the exclude settings make no sense.");
 }
-void ZFSfdConfig::setLibZFShandle(libzfs_handle_t* handle=nullptr) {
+void ZFSfdConfig::setLibZFShandle(libzfs_handle_t* handle) {
 	 m_libzfs_handle = handle;
 }

@@ -102,6 +102,7 @@ static bRC freePlugin(PluginContext* ctx) {
     return bRC_Error;
   }
   // free our private context.
+  Dmsg(ctx, debuglevel, "cleanup libzfs");
   cleanup_libzfs(p_ctx);
   delete p_ctx;
   p_ctx = nullptr;
@@ -250,7 +251,7 @@ static bool checkConfig(PluginContext* ctx) {
 static void cleanup_libzfs(ZFSfdConfig* config) {
 	if(config->getLibZFShandle()) {
 		libzfs_fini(config->getLibZFShandle());
-		config->getLibZFShandle() = nullptr;
+		config->setLibZFShandle();
 	}
 }
 static bool init_libzfs(ZFSfdConfig* config) {
