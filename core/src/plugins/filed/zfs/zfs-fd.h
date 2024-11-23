@@ -80,6 +80,8 @@ static bRC setXattr(PluginContext* ctx, xattr_pkt* xp);
 
 static const int debuglevel = 150;
 static bool checkConfig(PluginContext* ctx);
+static void cleanup_libzfs(ZFSfdConfig* config);
+static bool init_libzfs(PluginContext* config);
 
 } // namespace filedaemon
 #endif // ZFS_FD_HEADER

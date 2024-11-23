@@ -18,7 +18,7 @@
 #include "zfs-fd.h"
 #include <new>
 #include <stdexcept>
-
+#include <errno.h>
 
 /* ZFS header*/
 #include <libzfs.h>
@@ -102,6 +102,7 @@ static bRC freePlugin(PluginContext* ctx) {
     return bRC_Error;
   }
   // free our private context.
+  cleanup_libzfs(p_ctx);
   delete p_ctx;
   p_ctx = nullptr;
   return bRC_OK;
@@ -126,6 +127,12 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
   switch (event->eventType) {
     case bEventJobStart:
       Dmsg(ctx, debuglevel, "zfs-fd: JobStart=%s\n", (char*)value);
+      if (!init_libzfs(p_ctx)) {
+	Jmsg(ctx, M_FATAL, "zfs-fd: unable init libzfs\n%s\n", libzfs_error_init(errno));
+        retval = bRC_Error;
+      } else {
+      	Dmsg(ctx, debuglevel, "zfs-fd: init libzfs ok");
+      }
       break;
     case bEventRestoreCommand:
       // Fall-through wanted
@@ -240,5 +247,19 @@ static bool checkConfig(PluginContext* ctx) {
   }
   return true;
 }
-
+static void cleanup_libzfs(ZFSfdConfig* config) {
+	if(config->getLibZFShandle()) {
+		libzfs_fini(config->getLibZFShandle());
+		config->getLibZFShandle() = nullptr;
+	}
+}
+static bool init_libzfs(ZFSfdConfig* config) {
+	bool ret = true;
+	libzfs_handle_t* h = libzfs_init();
+	if(h == NULL) {
+		ret = false;
+	} else 
+		config->setLibZFShandle(h);
+	return ret;
+}
 } // namespace filedaemon

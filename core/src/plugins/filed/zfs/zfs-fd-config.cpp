@@ -22,6 +22,7 @@
 
 ZFSfdConfig::ZFSfdConfig() {
 	setSnapshotPrefix("bareos");
+ 	setLibZFShandle();
 }
 void ZFSfdConfig::setSnapshotPrefix(std::string prefix) {
 	m_snapshot_prefix = prefix;	
@@ -74,6 +75,9 @@ void ZFSfdConfig::addVolumes(std::set<std::string> volumes) {
 const std::set<std::string>&  ZFSfdConfig::getVolumes() const {
 	return m_volumes;
 }
+libzfs_handle_t* ZFSfdConfig::getLibZFShandle() {
+	return m_libzfs_handle;
+}
 void ZFSfdConfig::verifyConfig() {
 	if (m_snapshot_prefix.empty())
 		throw std::invalid_argument("The snapshot prefix can't be empty.");
@@ -89,4 +93,7 @@ void ZFSfdConfig::verifyConfig() {
 	// When datasets/volumes are set, then exclude settings makes no sense.
 	if (*m_tanks.cbegin() == "none" and (!m_exclude_datasets.empty() or !m_exclude_volumes.empty()))
 		throw std::invalid_argument("When settings the datasets/volumes by hand, the exclude settings make no sense.");
+}
+void ZFSfdConfig::setLibZFShandle(libzfs_handle_t* handle=nullptr) {
+	 m_libzfs_handle = handle;
 }

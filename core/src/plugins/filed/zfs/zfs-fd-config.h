@@ -23,6 +23,7 @@
 
 #include <string>
 #include <set>
+#include <libzfs_core.h>
 
 class ZFSfdConfig {
 	public:
@@ -38,6 +39,7 @@ class ZFSfdConfig {
 		void addDatasets(std::set<std::string> datasets);
 		void addVolume(std::string volume);
 		void addVolumes(std::set<std::string> volumes);
+  		void setLibZFShandle(libzfs_handle_t* handle);
 		void verifyConfig();
 		const std::string& getSnapshotPrefix() const;
 		const std::set<std::string>& getTanks() const;
@@ -45,6 +47,7 @@ class ZFSfdConfig {
 		const std::set<std::string>& getExcludeVolumes() const;
 		const std::set<std::string>& getDatasets() const;
 		const std::set<std::string>& getVolumes() const;
+		libzfs_handle_t* getLibZFShandle();
 	private:
 		std::string m_snapshot_prefix;
 		std::set<std::string> m_tanks;
@@ -52,5 +55,6 @@ class ZFSfdConfig {
 		std::set<std::string> m_exclude_volumes;
 		std::set<std::string> m_datasets;
 		std::set<std::string> m_volumes;
+		libzfs_handle_t*      m_libzfs_handle;
 };
  #endif // ZFS_FD_CONFIG_H
