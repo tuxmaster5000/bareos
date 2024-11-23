@@ -24,7 +24,7 @@ sudo systemctl start  postgresql.service
 drop database if exists bareos;
 drop role if exists bareos;
 create role bareos with login password 'bareos';
-create database bareos with owner=bareos encoding=utf8;
+create database bareos with owner=bareos encoding=SQL_ASCII;
 psql -U bareos -W -h localhost bareos < core/src/cats/ddl/creates/postgresql.sql
 --- ZFS ---
 Zu schreiben
