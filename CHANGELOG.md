@@ -95,10 +95,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - plugins: adjust plugin info formatting [PR #1919]
 - python-bareos: fix backslash usage in regex [PR #1917]
 - Libcloud Accurate File Backup [PR #1903]
+- cats: add missing database locks [PR #1787]
+- webui: properly set focus to input box after each command [PR #1936]
+- bscrypto: fix and update code, and move CLI parsing to cli11, add systemtests [PR #1734]
+- stored: reserve/acquire a device on first incoming write data [PR #1715]
+- docs: add ADR infrastructure and first ADRs [PR #1945]
+- nsi installers: remove postgresql backend [PR #1914]
+- stored: add dedupable backend [PR #1663]
+- systemtests: fix plugin postgresql testrunner-* [PR #1947]
+- webui: fix handling deleted clients in restore browser [PR #1933]
+- console.cc: forbid @exec etc. as privileged user [PR #1950]
+- github actions python-bareos: add workflow_dispatch [PR #1966]
+- FreeBSD: fix sed inplace usage, use bin/sh as shebang for script, pkg make director dependent of database-postgresql [PR #1961]
+- dir: fix DbLocker usage [PR #1953]
+- Disable writing PRE_LABEL label-type to support WORM media [PR #1958]
+- debian: fix dedupable backend names [PR #1977]
+- external packages: use CPM packages instead of third-party directory [PR #1963]
+- scripts: remove unmaintained bareos-explorer [PR #1990]
 
 ### Removed
 - plugins: remove old deprecated postgres plugin [PR #1606]
 - Remove EOL platforms [PR #1684]
+- core: fix some overlooked issues in msvc merge [PR #1912]
 
 ### Documentation
 - docs: improvements for droplet, jobdefs [PR #1581]
@@ -108,6 +126,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix mistake in VolumeManagement.rst [PR #1829]
 - docs: improve Restoring a Bareos Server section [PR #1878]
 - Update ReaR documentation [PR #1871]
+- docs: improve debuginfo install description (fix issue #1943) [PR #1980]
+- docs: add debian howto start daemons instructions [PR #1998]
+- docs: move bareos-devel to github discussion [PR #1989]
 
 ### Fixed
 - dird: fix `purge oldest volume` [PR #1628]
@@ -131,6 +152,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix runtime status [PR #1872]
 - Fix multiple ACL handling bugs [PR #1875]
 - fix #1775 plugin: fd mariabackup add support mariadb 11+ [PR #1835]
+- deb control files: depend on python3-bareos [PR #1956]
+- fix include-ordering on FreeBSD that could cause build issues [PR #1972]
+- stored: fix volume size mismatch [PR #1992]
+- add Honor No Dump Flag to config output [PR #1994]
 
 [PR #1538]: https://github.com/bareos/bareos/pull/1538
 [PR #1581]: https://github.com/bareos/bareos/pull/1581
@@ -163,6 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1659]: https://github.com/bareos/bareos/pull/1659
 [PR #1661]: https://github.com/bareos/bareos/pull/1661
 [PR #1662]: https://github.com/bareos/bareos/pull/1662
+[PR #1663]: https://github.com/bareos/bareos/pull/1663
 [PR #1665]: https://github.com/bareos/bareos/pull/1665
 [PR #1670]: https://github.com/bareos/bareos/pull/1670
 [PR #1671]: https://github.com/bareos/bareos/pull/1671
@@ -181,6 +207,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1708]: https://github.com/bareos/bareos/pull/1708
 [PR #1710]: https://github.com/bareos/bareos/pull/1710
 [PR #1713]: https://github.com/bareos/bareos/pull/1713
+[PR #1715]: https://github.com/bareos/bareos/pull/1715
 [PR #1716]: https://github.com/bareos/bareos/pull/1716
 [PR #1717]: https://github.com/bareos/bareos/pull/1717
 [PR #1718]: https://github.com/bareos/bareos/pull/1718
@@ -193,6 +220,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1727]: https://github.com/bareos/bareos/pull/1727
 [PR #1728]: https://github.com/bareos/bareos/pull/1728
 [PR #1732]: https://github.com/bareos/bareos/pull/1732
+[PR #1734]: https://github.com/bareos/bareos/pull/1734
 [PR #1738]: https://github.com/bareos/bareos/pull/1738
 [PR #1739]: https://github.com/bareos/bareos/pull/1739
 [PR #1740]: https://github.com/bareos/bareos/pull/1740
@@ -210,6 +238,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1772]: https://github.com/bareos/bareos/pull/1772
 [PR #1773]: https://github.com/bareos/bareos/pull/1773
 [PR #1786]: https://github.com/bareos/bareos/pull/1786
+[PR #1787]: https://github.com/bareos/bareos/pull/1787
 [PR #1788]: https://github.com/bareos/bareos/pull/1788
 [PR #1789]: https://github.com/bareos/bareos/pull/1789
 [PR #1793]: https://github.com/bareos/bareos/pull/1793
@@ -247,6 +276,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [PR #1900]: https://github.com/bareos/bareos/pull/1900
 [PR #1903]: https://github.com/bareos/bareos/pull/1903
 [PR #1908]: https://github.com/bareos/bareos/pull/1908
+[PR #1912]: https://github.com/bareos/bareos/pull/1912
+[PR #1914]: https://github.com/bareos/bareos/pull/1914
 [PR #1917]: https://github.com/bareos/bareos/pull/1917
 [PR #1919]: https://github.com/bareos/bareos/pull/1919
+[PR #1933]: https://github.com/bareos/bareos/pull/1933
+[PR #1936]: https://github.com/bareos/bareos/pull/1936
+[PR #1945]: https://github.com/bareos/bareos/pull/1945
+[PR #1947]: https://github.com/bareos/bareos/pull/1947
+[PR #1950]: https://github.com/bareos/bareos/pull/1950
+[PR #1953]: https://github.com/bareos/bareos/pull/1953
+[PR #1956]: https://github.com/bareos/bareos/pull/1956
+[PR #1958]: https://github.com/bareos/bareos/pull/1958
+[PR #1961]: https://github.com/bareos/bareos/pull/1961
+[PR #1963]: https://github.com/bareos/bareos/pull/1963
+[PR #1966]: https://github.com/bareos/bareos/pull/1966
+[PR #1972]: https://github.com/bareos/bareos/pull/1972
+[PR #1977]: https://github.com/bareos/bareos/pull/1977
+[PR #1980]: https://github.com/bareos/bareos/pull/1980
+[PR #1989]: https://github.com/bareos/bareos/pull/1989
+[PR #1990]: https://github.com/bareos/bareos/pull/1990
+[PR #1992]: https://github.com/bareos/bareos/pull/1992
+[PR #1994]: https://github.com/bareos/bareos/pull/1994
+[PR #1998]: https://github.com/bareos/bareos/pull/1998
 [unreleased]: https://github.com/bareos/bareos/tree/master

@@ -33,6 +33,9 @@ if(NOT build_client_only)
   set(BACKENDS "")
   list(APPEND BACKENDS unix_tape_device.d)
   list(APPEND BACKENDS unix_fifo_device.d)
+  if(NOT HAVE_WIN32)
+    list(APPEND BACKENDS dedupable_device.d)
+  endif()
   if(${HAVE_GLUSTERFS})
     list(APPEND BACKENDS gfapi_device.d)
   endif()
@@ -80,7 +83,6 @@ set(LIBBAREOSSD_SRCS
 
 set(SDSRCS
     append.cc
-    askdir.cc
     authenticate.cc
     checkpoint_handler.cc
     dir_cmd.cc

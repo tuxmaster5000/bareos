@@ -312,8 +312,7 @@ read_volume:
         100,
         "Device previously written, moving to end of data. Expect %lld bytes\n",
         dev->VolCatInfo.VolCatBytes);
-    Jmsg(jcr, M_INFO, 0,
-         T_("Volume \"%s\" previously written, moving to end of data.\n"),
+    Jmsg(jcr, M_INFO, 0, T_("Moving to end of data on volume \"%s\"\n"),
          VolumeName);
 
     if (!dev->eod(dcr)) {
@@ -741,7 +740,6 @@ int DeviceControlRecord::TryAutolabel(bool opened)
     }
     Dmsg0(150, "dir_update_vol_info. Set Append\n");
     /* Copy Director's info into the device info */
-    dev->VolCatInfo = VolCatInfo; /* structure assignment */
     if (!dcr->DirUpdateVolumeInfo(
             is_labeloperation::True)) { /* indicate tape labeled */
       return try_error;

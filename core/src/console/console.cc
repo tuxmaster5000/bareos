@@ -48,13 +48,6 @@
 #include <fstream>
 #include <string>
 
-#define ConInit(x)
-#define ConTerm()
-#define ConSetZedKeys()
-#define trapctlc()
-#define clrbrk()
-#define usrbrk() 0
-
 #if defined(HAVE_WIN32) && !defined(HAVE_MSVC)
 // windows has its own isatty implemented, so
 // if we are compiling with msvc we can just use that
@@ -117,12 +110,6 @@ extern "C" void GotSigcontinue(int) { stop = false; }
 extern "C" void GotSigtout(int) {}
 extern "C" void GotSigtin(int) {}
 
-static int ZedKeyscmd(FILE*, BareosSocket*)
-{
-  ConSetZedKeys();
-  return 1;
-}
-
 // These are the @commands that run only in bconsole
 struct cmdstruct {
   const char* key;
@@ -140,11 +127,20 @@ static struct cmdstruct commands[] = {
     {NT_("echo"), EchoCmd, T_("echo command string")},
     {NT_("exec"), ExecCmd, T_("execute an external command")},
     {NT_("exit"), QuitCmd, T_("exit = quit")},
-    {NT_("zed_keys"), ZedKeyscmd,
-     T_("zed_keys = use zed keys instead of bash keys")},
     {NT_("help"), HelpCmd, T_("help listing")},
     {NT_("separator"), EolCmd, T_("set command separator")},
 };
+
+
+// Windows has its own predefined IsUserAnAdmin() function
+#if !defined(HAVE_WIN32) && !defined(HAVE_MSVC)
+static bool IsUserAnAdmin()
+{
+  uid_t euid = geteuid();
+  return (euid == 0);
+}
+#endif
+
 #define comsize ((int)(sizeof(commands) / sizeof(struct cmdstruct)))
 
 static int Do_a_command(FILE* input, BareosSocket* UA_sock)
@@ -198,12 +194,9 @@ static void ReadAndProcessInput(FILE* input, BareosSocket* UA_sock)
     }
     if (tty_input) {
       status = GetCmd(input, prompt, UA_sock, 30);
-      if (usrbrk() == 1) { clrbrk(); }
-      if (usrbrk()) { break; }
     } else {
       // Reading input from a file
       int len = SizeofPoolMemory(UA_sock->msg) - 1;
-      if (usrbrk()) { break; }
       if (fgets(UA_sock->msg, len, input) == NULL) {
         status = -1;
       } else {
@@ -265,17 +258,12 @@ static void ReadAndProcessInput(FILE* input, BareosSocket* UA_sock)
 
       /* Suppress output if running
        * in background or user hit ctl-c */
-      if (!stop && !usrbrk()) {
+      if (!stop) {
         if (UA_sock->msg) { ConsoleOutput(UA_sock->msg); }
       }
     }
     StopBsockTimer(tid);
 
-    if (usrbrk() > 1) {
-      break;
-    } else {
-      clrbrk();
-    }
     if (!stop) { fflush(stdout); }
 
     if (IsBnetStop(UA_sock)) {
@@ -525,7 +513,8 @@ static char** readline_completion(const char* text, int start, int)
   cmd = get_first_keyword();
   if (s) {
     for (int i = 0; i < key_size; i++) {
-      // See if this keyword is allowed with the current file_selection setting.
+      // See if this keyword is allowed with the current file_selection
+      // setting.
       if (cpl_keywords[i].file_selection != file_selection) { continue; }
 
       if (Bstrcasecmp(s, cpl_keywords[i].key)) {
@@ -930,7 +919,6 @@ int main(int argc, char* argv[])
   signal(SIGCONT, GotSigcontinue);
   signal(SIGTTIN, GotSigtin);
   signal(SIGTTOU, GotSigtout);
-  trapctlc();
 #endif
 
   OSDependentInit();
@@ -961,8 +949,6 @@ int main(int argc, char* argv[])
     Emsg1(M_ERROR_TERM, 0, T_("Please correct configuration file: %s\n"),
           my_config->get_base_config_path().c_str());
   }
-
-  ConInit(stdin);
 
   if (list_directors) {
     foreach_res (director_resource, R_DIRECTOR) {
@@ -1119,7 +1105,6 @@ static void TerminateConsole(int sig)
   my_config = NULL;
   CleanupCrypto();
   FreePoolMemory(g_args);
-  ConTerm();
   WSACleanup(); /* Cleanup Windows sockets */
 
   if (sig != 0) { exit(BEXIT_FAILURE); }
@@ -1163,8 +1148,10 @@ static int Versioncmd(FILE*, BareosSocket*)
 /* @input <input-filename> */
 static int InputCmd(FILE*, BareosSocket*)
 {
-  FILE* fd;
-
+  if (IsUserAnAdmin()) {
+    ConsoleOutput(T_("@input command is not allowed as privileged user.\n"));
+    return 1;
+  }
   if (g_argc > 2) {
     ConsoleOutput(T_("Too many arguments on input command.\n"));
     return 1;
@@ -1173,7 +1160,7 @@ static int InputCmd(FILE*, BareosSocket*)
     ConsoleOutput(T_("First argument to input command must be a filename.\n"));
     return 1;
   }
-  fd = fopen(g_argk[1], "rb");
+  FILE* fd = fopen(g_argk[1], "rb");
   if (!fd) {
     BErrNo be;
     ConsoleOutputFormat(T_("Cannot open file %s for input. ERR=%s\n"),
@@ -1189,6 +1176,10 @@ static int InputCmd(FILE*, BareosSocket*)
 /* Send output to both terminal and specified file */
 static int TeeCmd(FILE* input, BareosSocket* UA_sock)
 {
+  if (IsUserAnAdmin()) {
+    ConsoleOutput(T_("@tee command is not allowed as privileged user.\n"));
+    return 1;
+  }
   EnableTeeOut();
   return DoOutputcmd(input, UA_sock);
 }
@@ -1197,6 +1188,10 @@ static int TeeCmd(FILE* input, BareosSocket* UA_sock)
 /* Send output to specified "file" */
 static int OutputCmd(FILE* input, BareosSocket* UA_sock)
 {
+  if (IsUserAnAdmin()) {
+    ConsoleOutput(T_("@output command is not allowed as privileged user.\n"));
+    return 1;
+  }
   DisableTeeOut();
   return DoOutputcmd(input, UA_sock);
 }
@@ -1233,6 +1228,11 @@ static int ExecCmd(FILE*, BareosSocket*)
   char line[5000];
   int status;
   int wait = 0;
+
+  if (IsUserAnAdmin()) {
+    ConsoleOutput(T_("@exec command is not allowed as privileged user.\n"));
+    return 1;
+  }
 
   if (g_argc > 3) {
     ConsoleOutput(

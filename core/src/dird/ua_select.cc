@@ -148,6 +148,38 @@ const char* GetArgValue(UaContext* ua, const char* keyword)
 }
 
 /**
+ * Tries to find client name, provided as command line argument in the Bareos
+ * catalog. This differs from ua->GetClientResWithName as it also gets clients
+ * no longer available in the configuration.
+ *
+ * @return -1: if invalid client parameter is given.
+ * @return  0: no client parameter given.
+ * @return >0: valid client parameter is given.
+ */
+int FindClientArgFromDatabase(UaContext* ua)
+{
+  ClientDbRecord cr;
+  int i = FindArgWithValue(ua, NT_("client"));
+  ASSERT(i != 0);
+  if (i >= 0) {
+    if (!IsNameValid(ua->argv[i], ua->errmsg)) {
+      ua->ErrorMsg("%s argument: %s", ua->argk[i], ua->errmsg.c_str());
+      return -1;
+    }
+    // this is checked by IsNameValid
+    ASSERT(strlen(ua->argv[i]) < sizeof(cr.Name));
+    bstrncpy(cr.Name, ua->argv[i], sizeof(cr.Name));
+    if (!ua->db->GetClientRecord(ua->jcr, &cr)) {
+      ua->ErrorMsg("invalid %s argument: %s\n", ua->argk[i], ua->argv[i]);
+      return -1;
+    }
+    if (!ua->AclAccessOk(Client_ACL, cr.Name)) { return -1; }
+    return i;
+  }
+  return 0;
+}
+
+/**
  * Given a list of keywords, prompt the user to choose one.
  *
  * Returns: -1 on failure
@@ -702,7 +734,7 @@ bool SelectPoolDbr(UaContext* ua, PoolDbRecord* pr, const char* argk)
     if (Bstrcasecmp(ua->argk[i], argk) && ua->argv[i]
         && ua->AclAccessOk(Pool_ACL, ua->argv[i])) {
       bstrncpy(pr->Name, ua->argv[i], sizeof(pr->Name));
-      if (!ua->db->GetPoolRecord(ua->jcr, pr)) {
+      if (DbLocker _{ua->db}; !ua->db->GetPoolRecord(ua->jcr, pr)) {
         ua->ErrorMsg(T_("Could not find Pool \"%s\": ERR=%s"), ua->argv[i],
                      ua->db->strerror());
         pr->PoolId = 0;
@@ -713,7 +745,7 @@ bool SelectPoolDbr(UaContext* ua, PoolDbRecord* pr, const char* argk)
   }
 
   pr->PoolId = 0;
-  if (!ua->db->GetPoolIds(ua->jcr, &num_pools, &ids)) {
+  if (DbLocker _{ua->db}; !ua->db->GetPoolIds(ua->jcr, &num_pools, &ids)) {
     ua->ErrorMsg(T_("Error obtaining pool ids. ERR=%s\n"), ua->db->strerror());
     if (ids) { free(ids); }
     return 0;
@@ -751,6 +783,7 @@ bool SelectPoolDbr(UaContext* ua, PoolDbRecord* pr, const char* argk)
   if (!bstrcmp(name, T_("*None*"))) {
     bstrncpy(opr.Name, name, sizeof(opr.Name));
 
+    DbLocker _{ua->db};
     if (!ua->db->GetPoolRecord(ua->jcr, &opr)) {
       ua->ErrorMsg(T_("Could not find Pool \"%s\": ERR=%s"), name,
                    ua->db->strerror());
@@ -922,8 +955,7 @@ bool SelectMediaDbr(UaContext* ua, MediaDbRecord* mr)
     }
   }
 
-
-  if (!ua->db->GetMediaRecord(ua->jcr, mr)) {
+  if (DbLocker _{ua->db}; !ua->db->GetMediaRecord(ua->jcr, mr)) {
     err = ua->db->strerror();
     goto bail_out;
   }
@@ -1988,6 +2020,12 @@ bool GetUserJobLevelSelection(UaContext* ua, std::vector<char>& joblevel_list)
     for (const auto& level : joblevelinput_list) {
       if (level.size() == 1 && level[0] >= 'A' && level[0] <= 'z') {
         joblevel_list.push_back(level[0]);
+      } else if (Bstrcasecmp(level.c_str(), "Full")) {
+        joblevel_list.push_back('F');
+      } else if (Bstrcasecmp(level.c_str(), "Differential")) {
+        joblevel_list.push_back('D');
+      } else if (Bstrcasecmp(level.c_str(), "Incremental")) {
+        joblevel_list.push_back('I');
       } else {
         /* invalid joblevel */
         return false;

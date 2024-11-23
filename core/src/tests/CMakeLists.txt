@@ -221,6 +221,13 @@ if(NOT client-only)
   )
 
   bareos_add_test(
+    bad_configs
+    configure
+    LINK_LIBRARIES testing_common dird_objects bareosfind bareossql
+                   GTest::gtest_main
+  )
+
+  bareos_add_test(
     berrno_test
     LINK_LIBRARIES bareos dird_objects bareosfind bareossql
                    $<$<BOOL:HAVE_PAM>:${PAM_LIBRARIES}> GTest::gtest_main
@@ -519,6 +526,12 @@ bareos_add_test(
 if(NOT HAVE_WIN32)
   bareos_add_test(fvec LINK_LIBRARIES GTest::gtest_main)
 endif()
+
+bareos_add_test(
+  backend_parse
+  LINK_LIBRARIES bareos GTest::gtest_main
+  ADDITIONAL_SOURCES "../stored/backends/util.cc"
+)
 
 bareoscopydllstobindir()
 include(DebugEdit)

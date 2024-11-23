@@ -75,7 +75,7 @@ static inline bool reRunJob(UaContext* ua, JobId_t JobId, bool yes, utime_t now)
 
   jr.JobId = JobId;
   ua->SendMsg("rerunning jobid %d\n", jr.JobId);
-  if (!ua->db->GetJobRecord(ua->jcr, &jr)) {
+  if (DbLocker _{ua->db}; !ua->db->GetJobRecord(ua->jcr, &jr)) {
     Jmsg(ua->jcr, M_WARNING, 0,
          T_("Error getting Job record for Job rerun: ERR=%s\n"),
          ua->db->strerror());
@@ -104,7 +104,7 @@ static inline bool reRunJob(UaContext* ua, JobId_t JobId, bool yes, utime_t now)
     ClientDbRecord cr;
 
     cr.ClientId = jr.ClientId;
-    if (!ua->db->GetClientRecord(ua->jcr, &cr)) {
+    if (DbLocker _{ua->db}; !ua->db->GetClientRecord(ua->jcr, &cr)) {
       Jmsg(ua->jcr, M_WARNING, 0,
            T_("Error getting Client record for Job rerun: ERR=%s\n"),
            ua->db->strerror());
@@ -118,7 +118,7 @@ static inline bool reRunJob(UaContext* ua, JobId_t JobId, bool yes, utime_t now)
     PoolDbRecord pr;
 
     pr.PoolId = jr.PoolId;
-    if (!ua->db->GetPoolRecord(ua->jcr, &pr)) {
+    if (DbLocker _{ua->db}; !ua->db->GetPoolRecord(ua->jcr, &pr)) {
       Jmsg(ua->jcr, M_WARNING, 0,
            T_("Error getting Pool record for Job rerun: ERR=%s\n"),
            ua->db->strerror());
@@ -182,7 +182,7 @@ static inline bool reRunJob(UaContext* ua, JobId_t JobId, bool yes, utime_t now)
     FileSetDbRecord fs;
 
     fs.FileSetId = jr.FileSetId;
-    if (!ua->db->GetFilesetRecord(ua->jcr, &fs)) {
+    if (DbLocker _{ua->db}; !ua->db->GetFilesetRecord(ua->jcr, &fs)) {
       Jmsg(ua->jcr, M_WARNING, 0,
            T_("Error getting FileSet record for Job rerun: ERR=%s\n"),
            ua->db->strerror());
@@ -1425,7 +1425,7 @@ static bool DisplayJobParameters(UaContext* ua,
                                                    * requested
                                                    */
           jr.JobId = jcr->dir_impl->RestoreJobId;
-          if (!ua->db->GetJobRecord(jcr, &jr)) {
+          if (DbLocker _{ua->db}; !ua->db->GetJobRecord(jcr, &jr)) {
             ua->ErrorMsg(
                 T_("Could not get job record for selected JobId. ERR=%s"),
                 ua->db->strerror());
@@ -2193,10 +2193,25 @@ static bool ScanCommandLineArguments(UaContext* ua, RunContext& rc)
   if (rc.client_name) {
     rc.client = ua->GetClientResWithName(rc.client_name);
     if (!rc.client) {
-      if (*rc.client_name != 0) {
-        ua->WarningMsg(T_("Client \"%s\" not found.\n"), rc.client_name);
+      // Running backup jobs can only be performed on clients with a
+      // configuration resource. However, a restore job should also work from
+      // clients without configuration resource (client has been deleted from
+      // the configruation, but can still be found in the catalog database).
+      if (rc.job->JobType == JT_RESTORE) {
+        ClientDbRecord cr;
+        bstrncpy(cr.Name, rc.client_name, sizeof(cr.Name));
+        if ((!ua->db->GetClientRecord(ua->jcr, &cr))
+            || (!ua->AclAccessOk(Client_ACL, cr.Name, true))) {
+          ua->ErrorMsg(T_("Client \"%s\" not found.\n"), rc.client_name);
+          return false;
+        }
+      } else {
+        if (*rc.client_name != 0) {
+          ua->WarningMsg(T_("Client \"%s\" not found.\n"), rc.client_name);
+        }
+        rc.client = select_client_resource(ua);
+        if (!rc.client) { return false; }
       }
-      rc.client = select_client_resource(ua);
     }
   } else if (!rc.client) {
     rc.client = rc.job->client; /* use default */
@@ -2220,6 +2235,7 @@ static bool ScanCommandLineArguments(UaContext* ua, RunContext& rc)
                        rc.restore_client_name);
       }
       rc.client = select_client_resource(ua);
+      if (!rc.client) { return false; }
     }
   } else if (!rc.client) {
     rc.client = rc.job->client; /* use default */
