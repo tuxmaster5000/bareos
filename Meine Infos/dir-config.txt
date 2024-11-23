@@ -4,6 +4,14 @@ Director {
 	Working Directory = "/tmp/bareos-zfs"
 	Dir Addresses = { ipv6 = { addr = ::1; port = 8890 }}
 }
+Catalog {
+	Name = Datenbank
+	DB Name = bareos
+	DB User = bareos
+	DB Password = bareos
+	DB Address = localhost
+	
+}
 Messages {
 	Name = Standart
 	Append = /tmp/bareos-zfs/dir.log = all
