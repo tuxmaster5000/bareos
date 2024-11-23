@@ -3,6 +3,8 @@ Director {
 	Password = "demo"
 	Working Directory = "/tmp/bareos-zfs"
 	Dir Addresses = { ipv6 = { addr = ::1; port = 8890 }}
+	TLS Enable = no
+        TLS Require = no
 }
 Catalog {
 	Name = Datenbank
@@ -25,17 +27,22 @@ Client {
 	Address = ::1
 	Port = 8888
 	Password = "demo"
+	TLS Enable = no
 }
 Storage {
 	Name = Standart
-	Device = NULL
-	Media Type = NULL
+	Device = Dummy
+	Media Type = Nix
 	Password = "demo"
 	Address = ::1
 	Port = 8889 
+	TLS Enable = no
 }
 FileSet {
 	Name = Standart
+	Include {
+		Plugin = "zfs"
+	}
 }
 Job {
 	Name = Backup-ZFS

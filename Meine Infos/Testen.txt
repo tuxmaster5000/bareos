@@ -16,6 +16,15 @@ build-root/core/src/filed/bareos-fd -f -d 500 -v -c Meine\ Infos/fd-config.txt
 - Test für Sicherungen -
 -- Vorbereitung --
 mkdir -p /tmp/bareos-zfs/
+pushd build-root/core/src/filed
+cp ../plugins/filed/bpipe-fd.so .
+cp ../plugins/filed/zfs/zfs-fd.so .
+popd
+pushd build-root/core/src/stored
+mkdir plugins
+cp ../plugins/stored/*.so plugins/
+rm -f plugins/python3-sd.so
+popd
 --- SQL ---
 ---- HBA ----
 host    bareos          bareos          ::1/128                 password

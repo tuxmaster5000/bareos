@@ -4,7 +4,6 @@ Client {
         FDAddresses = { ipv6 = { addr = ::1; port = 8888 }}
         Plugin Directory = build-root/core/src/filed
         TLS Enable = no
-        TLS Require = no
         
                 
 }
@@ -15,6 +14,4 @@ Director {
         Name = DIR-Test
         Password = "demo"
         TLS Enable = no
-        TLS Require = no
-        Enable kTLS = no
 }
