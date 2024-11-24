@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 
 using namespace std;
 
@@ -13,6 +14,23 @@ void cleanup(data_struct* was) {
 	libzfs_fini(was->libzfs);
 	printf("Aufgeräumt\n");
 }
+int fs_info(zfs_handle_t* fs, void* data) {
+	string fs_type;
+	switch(zfs_get_type(fs)) {
+		case ZFS_TYPE_FILESYSTEM:
+			fs_type = "Dateisystem";
+			break;
+		case ZFS_TYPE_VOLUME:
+			fs_type = "Klumpen";
+			break;
+		default:
+			fs_type = "Unbekannt";
+	}
+	printf("\t%s - %s\n", zfs_get_name(fs), fs_type.c_str());
+	zfs_iter_filesystems(fs, fs_info, nullptr);
+	zfs_close(fs);
+	return 0;
+}
 int pool_info(zpool_handle_t* pool, void* data) {
 	const char *p_name;
 	data_struct* my_data= static_cast<data_struct*>(data); 
@@ -21,7 +39,8 @@ int pool_info(zpool_handle_t* pool, void* data) {
 	if(pool) {
 		printf("%s:\n", p_name);
 		++*my_data->pool_counter;
-		zfs_close(my_pool);
+		fs_info(my_pool, nullptr);
+		printf("\tSnapshots:\n");
 	} else {
 		perror(p_name);
 		return 1;
