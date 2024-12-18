@@ -49,7 +49,30 @@ CPMAddPackage(
   GITHUB_REPOSITORY fmtlib/fmt
   GIT_TAG 11.0.2
   EXCLUDE_FROM_ALL YES
+  OPTIONS "BUILD_SHARED_LIBS OFF"
 )
+
+CPMAddPackage(
+  NAME Microsoft.GSL
+  VERSION "4.0.0"
+  GITHUB_REPOSITORY "microsoft/GSL"
+  EXCLUDE_FROM_ALL
+)
+
+CPMAddPackage(
+  NAME tl-expected
+  VERSION "1.0.0"
+  GITHUB_REPOSITORY "TartanLlama/expected"
+  GIT_TAG "v1.1.0"
+  DOWNLOAD_ONLY YES
+)
+if(tl-expected_ADDED)
+  add_library(expected INTERFACE)
+  target_include_directories(
+    expected INTERFACE ${CPM_PACKAGE_tl-expected_SOURCE_DIR}/include
+  )
+  add_library(tl::expected ALIAS expected)
+endif()
 
 CPMAddPackage(
   NAME utf8cpp

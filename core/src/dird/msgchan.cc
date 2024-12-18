@@ -510,7 +510,8 @@ extern "C" void* msg_thread(void* arg)
     Qmsg(jcr, M_FATAL, 0, T_("Director's comm line to SD dropped.\n"));
   }
   if (IsBnetError(sd)) { jcr->dir_impl->SDJobStatus = JS_ErrorTerminated; }
-  pthread_cleanup_pop(1); /* remove and execute the handler */
+  pthread_cleanup_pop(0); /* remove and execute the handler */
+  MsgThreadCleanup(arg);
   return NULL;
 }
 
@@ -527,7 +528,7 @@ static void WaitForCanceledStorageDaemonTermination(
     if (jcr->dir_impl->SD_msg_chan_started) {
       jcr->store_bsock->SetTimedOut();
       jcr->store_bsock->SetTerminated();
-      SdMsgThreadSendSignal(jcr, TIMEOUT_SIGNAL, l);
+      SdMsgThreadSendSignal(jcr, kTimeoutSignal, l);
     }
 
     if (jcr->dir_impl->term_wait.wait_until(l, timeout)

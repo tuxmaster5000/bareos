@@ -32,6 +32,9 @@
 #define DIR_DEFAULT_PORT "@dir_port@"
 #define NDMP_DEFAULT_PORT "10000"
 
+#cmakedefine HAVE_SOURCE_LOCATION @HAVE_SOURCE_LOCATION@
+#cmakedefine HAVE_BUILTIN_LOCATION @HAVE_BUILTIN_LOCATION@
+
 // Define to 1 if you use gcc
 #cmakedefine HAVE_GCC @HAVE_GCC@
 
@@ -501,6 +504,9 @@ extern char win_os[];
 
 // Directory for backend files
 #cmakedefine PATH_BAREOS_BACKENDDIR @PATH_BAREOS_BACKENDDIR@
+
+// Directory for backend files
+#cmakedefine PATH_BAREOS_SCRIPTDIR @PATH_BAREOS_SCRIPTDIR@
 
 // Directory for daemon files
 #cmakedefine PATH_BAREOS_WORKINGDIR @PATH_BAREOS_WORKINGDIR@

@@ -38,10 +38,10 @@ include(BareosHelper)
 
 # switch on CXX 17 Support
 #
-if(NOT MSVC)
-  set(CMAKE_CXX_STANDARD 17)
-else()
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set(CMAKE_CXX_STANDARD 20)
+else()
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # enable PIC/PIE by default
@@ -725,14 +725,17 @@ else()
   if(TARGET droplet)
     list(APPEND BACKENDS droplet_device.d)
   endif()
+  list(APPEND BACKENDS dplcompat_device.d)
 endif()
 
 if(HAVE_MSVC)
   set(PATH_BAREOS_WORKINGDIR \"%TEMP%\")
   set(PATH_BAREOS_BACKENDDIR \".\")
+  set(PATH_BAREOS_SCRIPTDIR \".\")
 else()
   set(PATH_BAREOS_BACKENDDIR \"${backenddir}\")
   set(PATH_BAREOS_WORKINGDIR \"${workingdir}\")
+  set(PATH_BAREOS_SCRIPTDIR \"${scriptdir}\")
 endif()
 
 if(HAVE_WIN32)
@@ -884,6 +887,10 @@ message(
 message(
   "   Python3 support:              ${Python3_FOUND} ${Python3_VERSION} ${Python3_INCLUDE_DIRS} ${Python3_EXECUTABLE}"
 )
+message(
+  "   Protobuf support:             ${Protobuf_FOUND} ${Protobuf_VERSION}"
+)
+message("   GRPC support:                 ${gRPC_FOUND} ${gRPC_VERSION}")
 message("   systemd support:              ${WITH_SYSTEMD} ${SYSTEMD_UNITDIR}")
 message("   Batch insert enabled:         ${USE_BATCH_FILE_INSERT}")
 message(
