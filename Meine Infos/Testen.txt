@@ -36,7 +36,15 @@ create role bareos with login password 'bareos';
 create database bareos with owner=bareos encoding=SQL_ASCII TEMPLATE=template0;
 psql -U bareos -W -h localhost bareos < core/src/cats/ddl/creates/postgresql.sql
 --- ZFS ---
-Zu schreiben
+---- Pools ----
+zpool create pool1 /dev/sdb1 -o mountoint=none
+zpool create pool2 /dev/sdb2 -o mountoint=none
+zpool create pool3 /dev/sdb3 -o mountoint=none
+---- Speicher ----
+# RAW
+zfs create -V 1G pool1/Klumpen1
+# FS
+zfs create -o mountpoint=none pool1/fs11
 --- Bareos ---
 ---- Direktor ----
 build-root/core/src/dird/bareos-dir -f -v -d 500 -c Meine\ Infos/dir-config.txt
