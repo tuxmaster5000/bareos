@@ -96,6 +96,7 @@ static bRC newPlugin(PluginContext* ctx) {
 } 
 // Free a plugin instance, i.e. release our private storage
 static bRC freePlugin(PluginContext* ctx) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling freePlugin\n");  
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
     Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
@@ -109,15 +110,18 @@ static bRC freePlugin(PluginContext* ctx) {
   return bRC_OK;
 }
 // Not used current in Bareos
-static bRC getPluginValue([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] pVariable var, [[maybe_unused]] void* value) {
+static bRC getPluginValue(PluginContext* ctx, pVariable var, [[maybe_unused]] void* value) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling getPluginValue for %s\n", (char*)var);
   return bRC_OK;
 }
 // Not used current in Bareos
-static bRC setPluginValue([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] pVariable var, [[maybe_unused]] void* value) {
+static bRC setPluginValue(PluginContext* ctx, pVariable var, void* value) {
+   Dmsg(ctx, debuglevel, "zfs-fd: calling setPluginValue for %s to %s\n", (char*)var, (char*)value);
   return bRC_OK;
 }
 // Handle an event that comes from Bareos
 static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
+   Dmsg(ctx, debuglevel, "zfs-fd: calling handlePluginEvent for event number %d.\n", event->eventType);
   bRC retval = bRC_OK;
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   // No plug-in context -> something must be wrong.
@@ -127,7 +131,11 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
   }
   switch (event->eventType) {
     case bEventJobStart:
-      Dmsg(ctx, debuglevel, "zfs-fd: JobStart=%s\n", (char*)value);
+      /*
+       * Init the the zfs lib now.
+       * Parsing the options will be done later.
+      */
+      Dmsg(ctx, debuglevel, "zfs-fd: Event-JobStart=%s\n", (char*)value);
       if (!init_libzfs(p_ctx)) {
 	Dmsg(ctx, debuglevel, "unable init libzfs\n%s\n", libzfs_error_init(errno));
 	Jmsg(ctx, M_FATAL, "zfs-fd: unable init libzfs\n%s\n", libzfs_error_init(errno));
@@ -143,10 +151,21 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
     case bEventEstimateCommand:
       // Fall-through wanted
     case bEventPluginCommand:
-      /* must be done */
-      //retval = parse_plugin_definition(ctx, value);
+      Dmsg(ctx, debuglevel, "zfs-fd: Event-PluginCommand=%s\n", (char*)value);
+      /*
+       * Now it will be time for parsing the options
+      */
+      try {
+      	p_ctx->parseConfig((char*)value);
+      }
+      catch (std::invalid_argument const& e) {
+      	Jmsg(ctx, M_FATAL, "zfs-fd: Plugin option error: %d\n", e.what());
+	Dmsg(ctx, debuglevel, "zfs-fd: Plugin option error: %d\n", e.what());
+      	retval = bRC_Error;
+      }
       break;
     case bEventNewPluginOptions:
+      Dmsg(ctx, debuglevel, "zfs-fd: Event-NewPlugInOptions=%s\n", (char*)value);
       /* must be done */
       //retval = parse_plugin_definition(ctx, value);
       // Save that we got a plugin override.
@@ -162,6 +181,7 @@ static bRC handlePluginEvent(PluginContext* ctx, bEvent* event, void* value) {
 }
 // Start the backup of an file
 static bRC startBackupFile(PluginContext* ctx, [[maybe_unused]] save_pkt* sp) {
+   Dmsg(ctx, debuglevel, "zfs-fd: calling startBackupFile\n");
   //time_t now;
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
@@ -174,18 +194,21 @@ static bRC startBackupFile(PluginContext* ctx, [[maybe_unused]] save_pkt* sp) {
   return bRC_Error;
 }
 // Done with backup of this file
-static bRC endBackupFile([[maybe_unused]] PluginContext* ctx) {
+static bRC endBackupFile(PluginContext* ctx) {
+   Dmsg(ctx, debuglevel, "zfs-fd: calling endBackupFile\n");
   /* bRC_OK when it was the last one
    * bRC_More when more to backup*/
   return bRC_OK;
 }
 // When the restore starts
-static bRC startRestoreFile([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] const char* cmd) {
+static bRC startRestoreFile(PluginContext* ctx, const char* cmd) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling startRestoreFile with %s\n", (char*)cmd);
   if (!checkConfig(ctx)) { return bRC_Error; }
   return bRC_OK;
 }
 // When the restore ends
 static bRC endRestoreFile(PluginContext* ctx) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling endRestoreFile\n");
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
     Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
@@ -196,6 +219,7 @@ static bRC endRestoreFile(PluginContext* ctx) {
 }
 // Now the data I/O will be done
 static bRC pluginIO(PluginContext* ctx, [[maybe_unused]] io_pkt* io) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling pluginIO\n");
   ZFSfdConfig* p_ctx = static_cast<ZFSfdConfig*>(ctx->plugin_private_context);
   if (!p_ctx) {
     Dmsg(ctx, debuglevel, NO_CONFIG_OBJECT_TEXT);
@@ -207,33 +231,40 @@ static bRC pluginIO(PluginContext* ctx, [[maybe_unused]] io_pkt* io) {
 /* On restore create the file before the data comes
  * Here we must prepare the ZFS/zfs_revice stuff
  * */
-static bRC createFile([[maybe_unused]] PluginContext* ctx, restore_pkt* rp) {
+static bRC createFile(PluginContext* ctx, restore_pkt* rp) {
+   Dmsg(ctx, debuglevel, "zfs-fd: calling createFile\n");
   // because not implemented yet
   rp->create_status = CF_SKIP;
   return bRC_OK;
 }
 // We don't need file attrubutes for ZFS, so ignore this.
-static bRC setFileAttributes([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] restore_pkt* rp) {
+static bRC setFileAttributes(PluginContext* ctx, [[maybe_unused]] restore_pkt* rp) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling setFileAttributes\n");
   return bRC_OK;
 }
 // Check if an file exists in Inc/Diff backups, but this don't matter for zfs_send
-static bRC checkFile([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] char* fname) {
+static bRC checkFile(PluginContext* ctx, [[maybe_unused]] char* fname) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling PluginContext\n");
   return bRC_OK;
 }
 // not needed for ZFS
-static bRC getAcl([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] acl_pkt* ap) {
+static bRC getAcl(PluginContext* ctx, [[maybe_unused]] acl_pkt* ap) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling getAcl\n");
   return bRC_OK;
 }
 // not needed for ZFS
-static bRC setAcl([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] acl_pkt* ap) {
+static bRC setAcl(PluginContext* ctx, [[maybe_unused]] acl_pkt* ap) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling setAcl\n");
   return bRC_OK;
 }
 // not needed for ZFS
-static bRC getXattr([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] xattr_pkt* xp) {
+static bRC getXattr(PluginContext* ctx, [[maybe_unused]] xattr_pkt* xp) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling getXattr\n");
   return bRC_OK;
 }
 // not needed for ZFS
-static bRC setXattr([[maybe_unused]] PluginContext* ctx, [[maybe_unused]] xattr_pkt* xp) {
+static bRC setXattr(PluginContext* ctx, [[maybe_unused]] xattr_pkt* xp) {
+  Dmsg(ctx, debuglevel, "zfs-fd: calling setXattr\n");
   return bRC_OK;
 }
 

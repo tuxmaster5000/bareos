@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 tuxmaster5000 tuxmaster5000@googlemail.com
+   Copyright (C) 2024 - 2025 tuxmaster5000 tuxmaster5000@googlemail.com
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,10 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Tuxmaster5000, Jun 2024
-
 #include "zfs-fd-config.h"
 #include <stdexcept>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 ZFSfdConfig::ZFSfdConfig() {
 	setSnapshotPrefix("bareos");
@@ -96,4 +96,9 @@ void ZFSfdConfig::verifyConfig() {
 }
 void ZFSfdConfig::setLibZFShandle(libzfs_handle_t* handle) {
 	 m_libzfs_handle = handle;
+}
+void ZFSfdConfig::parseConfig(const std::string &config) {
+	std::set<std::string> options;
+	boost::split(options, config, boost::is_any_of(":"));
+	throw std::invalid_argument(boost::join(options, "|"));
 }

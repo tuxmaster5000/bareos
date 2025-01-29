@@ -41,6 +41,7 @@ class ZFSfdConfig {
 		void addVolumes(std::set<std::string> volumes);
   		void setLibZFShandle(libzfs_handle_t* handle=nullptr);
 		void verifyConfig();
+		void parseConfig(const std::string &config);
 		const std::string& getSnapshotPrefix() const;
 		const std::set<std::string>& getTanks() const;
 		const std::set<std::string>& getExcludeDatasets() const;
