@@ -1,5 +1,5 @@
 Vorher:
-sudo dnf install libzfs5-devel
+sudo dnf install libzfs5-devel boost-devel
 Damit die Versionsdatei da ist
 cmake -P write_version_files.cmake
 Bauen:
